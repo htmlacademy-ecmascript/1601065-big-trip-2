@@ -8,13 +8,13 @@ export default class BoardPresenter {
   sortComponent = new TripSortView();
   eventListComponent = new TripEventsListView();
 
-  constructor({boardContainer, eventModel}) {
+  constructor({boardContainer, eventsModel}) {
     this.boardContainer = boardContainer;
-    this.eventModel = eventModel;
+    this.eventsModel = eventsModel;
   }
 
   init() {
-    this.boardEvents = [...this.eventModel.getTasks()];
+    this.boardEvents = [...this.eventsModel.getTasks()];
 
     render(this.sortComponent, this.boardContainer);
     render(this.eventListComponent, this.boardContainer);

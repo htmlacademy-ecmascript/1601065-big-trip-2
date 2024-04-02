@@ -1,29 +1,35 @@
 import {createElement} from '../render.js';
-import { TRANSPORT, PLACE, OFFERS } from '../const.js';
+import {OFFERS, DESCRIPTION, SRC} from '../const.js';
 
-const BLANK_TASK = {
-  place: PLACE[0],
-  description: '',
-  dueDate: null,
-  repeating: {
-    mo: false,
-    tu: false,
-    we: false,
-    th: false,
-    fr: false,
-    sa: false,
-    su: false,
-  },
-  isArchive: false,
-  isFavorite: false,
+// const BLANK_EVENT = {
+//   eventTypes: EVENT_TYPES[0],
+//   description: '',
+//   dueDate: null,
+//   repeating: {
+//     mo: false,
+//     tu: false,
+//     we: false,
+//     th: false,
+//     fr: false,
+//     sa: false,
+//     su: false,
+//   },
+//   isArchive: false,
+//   isFavorite: false,
+// };
+const BLANK_EVENT = {
+  offers: OFFERS,
+  description: DESCRIPTION,
+  img: SRC
 };
 
-function createEventEditTemplate(data) {
-  const {offers, place, transport, dueDate, repeating, isArchive, isFavorite} = data;
 
-  function createEventFormTemplate() {
-    return (
-      `<li class="trip-events__item">
+function createEventEditTemplate(data) {
+  const {offers, description, img} = data;
+
+  // function createEventFormTemplate() {
+  return (
+    `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -124,7 +130,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
                 <label class="event__offer-label" for="event-offer-luggage-1">
-                  <span class="event__offer-title">Add luggage</span>
+                  <span class="event__offer-title">${offers}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">30</span>
                 </label>
@@ -133,7 +139,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
                 <label class="event__offer-label" for="event-offer-comfort-1">
-                  <span class="event__offer-title">Switch to comfort class</span>
+                  <span class="event__offer-title">${offers}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">100</span>
                 </label>
@@ -142,7 +148,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
                 <label class="event__offer-label" for="event-offer-meal-1">
-                  <span class="event__offer-title">Add meal</span>
+                  <span class="event__offer-title">${offers}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">15</span>
                 </label>
@@ -151,7 +157,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
                 <label class="event__offer-label" for="event-offer-seats-1">
-                  <span class="event__offer-title">Choose seats</span>
+                  <span class="event__offer-title">${offers}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">5</span>
                 </label>
@@ -160,7 +166,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
                 <label class="event__offer-label" for="event-offer-train-1">
-                  <span class="event__offer-title">Travel by train</span>
+                  <span class="event__offer-title">${offers}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">40</span>
                 </label>
@@ -170,23 +176,23 @@ function createEventEditTemplate(data) {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+            <p class="event__destination-description">${description}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-                <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-                <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-                <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-                <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+                <img class="event__photo" src="${img}" alt="Event photo">
+                <img class="event__photo" src="${img}" alt="Event photo">
+                <img class="event__photo" src="${img}" alt="Event photo">
+                <img class="event__photo" src="${img}" alt="Event photo">
+                <img class="event__photo" src="${img}" alt="Event photo">
               </div>
             </div>
           </section>
         </section>
     </form>
   </li>`
-    );
-  }
+  );
+  // }
 }
 
 export default class EventFormView {
@@ -195,7 +201,7 @@ export default class EventFormView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this.event);
+    return createEventEditTemplate(this.event);
   }
 
   getElement() {

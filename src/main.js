@@ -2,14 +2,14 @@ import TripInfoView from './view/trip-info-view.js';
 import TripFiltersView from './view/trip-filters-view.js';
 import BoardPresenter from './presenter/presenter.js';
 import {render, RenderPosition} from './render.js';
-import EventModel from './model/events-model.js';
+import EventsModel from './model/events-model.js';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteFiltersElement = document.querySelector('.trip-controls__filters');
 const boardElement = document.querySelector('.trip-events');
-const eventModel = new EventModel();
+const eventsModel = new EventsModel();
 const boardPresenter = new BoardPresenter({boardContainer: boardElement,
-  eventModel,
+  eventsModel,
 });
 
 render(new TripFiltersView(), siteFiltersElement);
