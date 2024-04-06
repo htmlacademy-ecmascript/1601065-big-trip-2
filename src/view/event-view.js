@@ -1,45 +1,30 @@
 import {createElement} from '../render.js';
-import { humanizeEventDueDate, isEventExpired, isEventRepeating } from '../utils.js';
+import { humanizeEventDueDate } from '../utils.js';
 
-function createEventTemplate(event) {
-  const {offers, place, transport, dueDate, repeating, isArchive, isFavorite} = event;
-
-  const date = humanizeEventDueDate(dueDate);
-  // написать в первые кавычки название класса при просроченной дате
-  const deadlineClassName = isEventExpired(dueDate)
-    ? ''
-    : '';
-    // написать в первые кавычки название класса если задача повторяется
-  const repeatClassName = isEventRepeating(repeating)
-    ? ''
-    : '';
-// Данный код нужно пременить для звездочек
-//     const archiveClassName = isArchive
-//     ? 'card__btn--archive card__btn--disabled'
-//     : 'card__btn--archive';
-
-//   const favoriteClassName = isFavorite
-//     ? 'card__btn--favorites card__btn--disabled'
-//     : 'card__btn--favorites';
+function createEventTemplate(event, offers, destinations) {
+  debugger
+  const { isFavorite, basePrice, dateFrom, dateTo} = event;
+  const {type} = offers;
+  const {name} = destinations;
 
   return (
     `<li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-18">${date}</time>
+        <time class="event__date" datetime="${humanizeEventDueDate(dateFrom)}">${humanizeEventDueDate(dateTo)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${transport}${place}</h3>
+        <h3 class="event__title">${type} ${name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+            <time class="event__start-time" datetime="2019-03-18T10:30">${dateFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+            <time class="event__end-time" datetime="2019-03-18T11:00">${dateTo}</time>
           </p>
           <p class="event__duration">30M</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">20</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
@@ -64,12 +49,14 @@ function createEventTemplate(event) {
 }
 
 export default class EventView {
-  constructor({event}) {
+  constructor({event, offers, destinations}) {
     this.event = event;
+    this.offers = offers;
+    this.destinations = destinations;
   }
 
   getTemplate() {
-    return createEventTemplate(this.event);
+    return createEventTemplate(this.event, this.offers, this.destinations);
   }
 
   getElement() {

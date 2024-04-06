@@ -10,12 +10,4 @@ function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
 
-function isEventExpired(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
-}
-
-function isEventRepeating(repeating) {
-  return Object.values(repeating).some(Boolean);
-}
-
-export {getRandomArrayElement, humanizeEventDueDate, isEventExpired, isEventRepeating};
+export {getRandomArrayElement, humanizeEventDueDate};

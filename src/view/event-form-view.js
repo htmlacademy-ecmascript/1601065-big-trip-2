@@ -1,27 +1,11 @@
 import {createElement} from '../render.js';
-import {OFFERS, DESCRIPTION, SRC} from '../const.js';
+import {EVENT_TYPES} from '../const.js';
 
 // const BLANK_EVENT = {
-//   eventTypes: EVENT_TYPES[0],
-//   description: '',
-//   dueDate: null,
-//   repeating: {
-//     mo: false,
-//     tu: false,
-//     we: false,
-//     th: false,
-//     fr: false,
-//     sa: false,
-//     su: false,
-//   },
-//   isArchive: false,
-//   isFavorite: false,
+//   offers: OFFERS,
+//   description: DESCRIPTION,
+//   img: SRC
 // };
-const BLANK_EVENT = {
-  offers: OFFERS,
-  description: DESCRIPTION,
-  img: SRC
-};
 
 
 function createEventEditTemplate(data) {
