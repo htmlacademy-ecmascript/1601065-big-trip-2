@@ -1,17 +1,7 @@
 import {createElement} from '../render.js';
-import {EVENT_TYPES} from '../const.js';
 
-// const BLANK_EVENT = {
-//   offers: OFFERS,
-//   description: DESCRIPTION,
-//   img: SRC
-// };
+function createEventEditTemplate() {
 
-
-function createEventEditTemplate(data) {
-  const {offers, description, img} = data;
-
-  // function createEventFormTemplate() {
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -114,7 +104,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
                 <label class="event__offer-label" for="event-offer-luggage-1">
-                  <span class="event__offer-title">${offers}</span>
+                  <span class="event__offer-title"></span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">30</span>
                 </label>
@@ -123,7 +113,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
                 <label class="event__offer-label" for="event-offer-comfort-1">
-                  <span class="event__offer-title">${offers}</span>
+                  <span class="event__offer-title"></span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">100</span>
                 </label>
@@ -132,7 +122,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
                 <label class="event__offer-label" for="event-offer-meal-1">
-                  <span class="event__offer-title">${offers}</span>
+                  <span class="event__offer-title"></span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">15</span>
                 </label>
@@ -141,7 +131,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
                 <label class="event__offer-label" for="event-offer-seats-1">
-                  <span class="event__offer-title">${offers}</span>
+                  <span class="event__offer-title"></span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">5</span>
                 </label>
@@ -150,7 +140,7 @@ function createEventEditTemplate(data) {
               <div class="event__offer-selector">
                 <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
                 <label class="event__offer-label" for="event-offer-train-1">
-                  <span class="event__offer-title">${offers}</span>
+                  <span class="event__offer-title"></span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">40</span>
                 </label>
@@ -160,15 +150,15 @@ function createEventEditTemplate(data) {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${description}</p>
+            <p class="event__destination-description"></p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                <img class="event__photo" src="${img}" alt="Event photo">
-                <img class="event__photo" src="${img}" alt="Event photo">
-                <img class="event__photo" src="${img}" alt="Event photo">
-                <img class="event__photo" src="${img}" alt="Event photo">
-                <img class="event__photo" src="${img}" alt="Event photo">
+                <img class="event__photo" src="" alt="Event photo">
+                <img class="event__photo" src="" alt="Event photo">
+                <img class="event__photo" src="" alt="Event photo">
+                <img class="event__photo" src="" alt="Event photo">
+                <img class="event__photo" src="" alt="Event photo">
               </div>
             </div>
           </section>
@@ -176,16 +166,17 @@ function createEventEditTemplate(data) {
     </form>
   </li>`
   );
-  // }
 }
 
 export default class EventFormView {
-  constructor({event = BLANK_EVENT}) {
+  constructor({event, offers, destinations}) {
     this.event = event;
+    this.offers = offers;
+    this.destinations = destinations;
   }
 
   getTemplate() {
-    return createEventEditTemplate(this.event);
+    return createEventEditTemplate(this.event, this.offers, this.destinations);
   }
 
   getElement() {
