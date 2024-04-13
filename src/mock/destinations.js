@@ -15,7 +15,7 @@ export const mockDestinations = [
     description: 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
     name: 'Moscow',
     pictures: [
-      {}
+
     ]
   },
 ];

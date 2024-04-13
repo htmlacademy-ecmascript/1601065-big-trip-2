@@ -16,5 +16,16 @@ const getInteger = (string) => parseInt(string, 10);
 
 const getDuration = (startDate, endDate) => dayjs.duration(dayjs(endDate).diff(dayjs(startDate)));
 
+const getDateDifference = (dateFrom, dateTo) => {
+  const difference = getDuration(dateFrom, dateTo);
+  const days = difference.format('D');
+  const hours = difference.format('HH');
+  const minutes = difference.format('mm');
+  const daysTemplate = getInteger(days) ? `${days}D` : '';
+  const hoursTemplate = !(getInteger(days) || getInteger(hours)) ? '' : `${hours}H`;
+  const minutesTemplate = `${minutes}M`;
 
-export {getRandomArrayElement, humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger};
+  return `${daysTemplate} ${hoursTemplate} ${minutesTemplate}`;
+};
+
+export {getRandomArrayElement, humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference};
