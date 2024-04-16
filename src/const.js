@@ -1,3 +1,3 @@
-const EVENT_TYPES = ['Check-in', 'Sightseeing', 'Restaurant', 'Taxi', 'Bus', 'Train', 'Ship', 'Drive' , 'Flight'];
+const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive' , 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 export {EVENT_TYPES};
