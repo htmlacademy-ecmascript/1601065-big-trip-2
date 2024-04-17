@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
-const DATE_FORMAT = 'MMMM D';
+const DATE_FORMAT = 'MMMM D HH:mm';
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -10,12 +12,20 @@ function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
 
-function isEventExpired(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
-}
+const getInteger = (string) => parseInt(string, 10);
 
-function isEventRepeating(repeating) {
-  return Object.values(repeating).some(Boolean);
-}
+const getDuration = (startDate, endDate) => dayjs.duration(dayjs(endDate).diff(dayjs(startDate)));
 
-export {getRandomArrayElement, humanizeEventDueDate, isEventExpired, isEventRepeating};
+const getDateDifference = (dateFrom, dateTo) => {
+  const difference = getDuration(dateFrom, dateTo);
+  const days = difference.format('D');
+  const hours = difference.format('HH');
+  const minutes = difference.format('mm');
+  const daysTemplate = getInteger(days) ? `${days}D` : '';
+  const hoursTemplate = !(getInteger(days) || getInteger(hours)) ? '' : `${hours}H`;
+  const minutesTemplate = `${minutes}M`;
+
+  return `${daysTemplate} ${hoursTemplate} ${minutesTemplate}`;
+};
+
+export {getRandomArrayElement, humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference};
