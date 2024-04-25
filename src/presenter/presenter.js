@@ -5,36 +5,40 @@ import EventView from '../view/event-view.js';
 import { render } from '../framework/render.js';
 
 export default class BoardPresenter {
-  sortComponent = new TripSortView();
-  eventListComponent = new TripEventsListView();
+  #boardContainer = null;
+  #eventsModel = null;
+  #sortComponent = new TripSortView();
+  #eventListComponent = new TripEventsListView();
+
+  #boardEvents = [];
 
   constructor({boardContainer, eventsModel}) {
-    this.boardContainer = boardContainer;
-    this.eventsModel = eventsModel;
+    this.#boardContainer = boardContainer;
+    this.#eventsModel = eventsModel;
   }
 
   init() {
-    this.boardEvents = [...this.eventsModel.getTasks()];
-    this.destinations = this.eventsModel.getDestinations();
-    this.offers = [...this.eventsModel.getOffers()];
+    this.#boardEvents = [...this.#eventsModel.events];
+    this.destinations = [...this.#eventsModel.destinations];
+    this.offers = [...this.#eventsModel.offers];
 
-    render(this.sortComponent, this.boardContainer);
-    render(this.eventListComponent, this.boardContainer);
+    render(this.#sortComponent, this.#boardContainer);
+    render(this.#eventListComponent, this.#boardContainer);
     render(new EventFormView({
-      event: this.boardEvents[0],
+      event: this.#boardEvents[0],
       destinations: this.destinations,
-      offersByType: this.eventsModel.getOffersByType(this.boardEvents[0].type)
+      offersByType: this.#eventsModel.getOffersByType(this.#boardEvents[0].type)
     }),
-    this.eventListComponent.element);
+    this.#eventListComponent.element);
 
-    for (let i = 0; i < this.boardEvents.length; i++) {
+    for (let i = 0; i < this.#boardEvents.length; i++) {
 
       render(new EventView({
-        event: this.boardEvents[i],
-        destination: this.eventsModel.getDestinationById(this.boardEvents[i].destination),
-        offersByType: this.eventsModel.getOffersByType(this.boardEvents[i].type)
+        event: this.#boardEvents[i],
+        destination: this.#eventsModel.getDestinationById(this.#boardEvents[i].destination),
+        offersByType: this.#eventsModel.getOffersByType(this.#boardEvents[i].type)
       }),
-      this.eventListComponent.element);
+      this.#eventListComponent.element);
     }
   }
 }

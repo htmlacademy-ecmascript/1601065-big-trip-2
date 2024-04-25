@@ -3,28 +3,28 @@ import { mockDestinations } from '../mock/destinations.js';
 import { mockOffers } from '../mock/offers.js';
 
 export default class EventsModel {
-  events = mockEvents;
-  destinations = mockDestinations;
-  offers = mockOffers;
+  #events = mockEvents;
+  #destinations = mockDestinations;
+  #offers = mockOffers;
 
-  getTasks() {
-    return this.events;
+  get events() {
+    return this.#events;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
   getOffersByType(type) {
-    return this.offers.find((offer) => offer.type === type).offers;
+    return this.#offers.find((offer) => offer.type === type).offers;
   }
 
   getDestinationById(id) {
-    return this.destinations.find((destination) => destination.id === id);
+    return this.#destinations.find((destination) => destination.id === id);
   }
 }
 
