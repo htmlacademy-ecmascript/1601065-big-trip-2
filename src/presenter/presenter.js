@@ -18,6 +18,7 @@ export default class BoardPresenter {
   }
 
   init() {
+
     this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = [...this.#eventsModel.offers];
@@ -31,14 +32,19 @@ export default class BoardPresenter {
     }),
     this.#eventListComponent.element);
 
-    for (let i = 0; i < this.#boardEvents.length; i++) {
 
-      render(new EventView({
+    this.#renderEvent();
+  }
+
+  #renderEvent() {
+    for (let i = 0; i < this.#boardEvents.length; i++) {
+      const eventComponent = new EventView({
         event: this.#boardEvents[i],
         destination: this.#eventsModel.getDestinationById(this.#boardEvents[i].destination),
         offersByType: this.#eventsModel.getOffersByType(this.#boardEvents[i].type)
-      }),
-      this.#eventListComponent.element);
+      });
+
+      render(eventComponent, this.#eventListComponent.element);
     }
   }
 }
