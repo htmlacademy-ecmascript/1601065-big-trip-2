@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
 import { EVENT_TYPES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEventTypeTemplate(eventType) {
   return(
@@ -145,26 +145,19 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
   );
 }
 
-export default class EventFormView {
+export default class EventFormView extends AbstractView {
+  #event = null;
+  #destinations = null;
+  #offersByType = null;
+
   constructor({event, destinations, offersByType}) {
-    this.event = event;
-    this.destinations = destinations;
-    this.offersByType = offersByType;
+    super();
+    this.#event = event;
+    this.#destinations = destinations;
+    this.#offersByType = offersByType;
   }
 
-  getTemplate() {
-    return createEventEditTemplate(this.event, this.destinations, this.offersByType);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventEditTemplate(this.#event, this.#destinations, this.#offersByType);
   }
 }

@@ -1,7 +1,8 @@
 import TripInfoView from './view/trip-info-view.js';
 import TripFiltersView from './view/trip-filters-view.js';
 import BoardPresenter from './presenter/presenter.js';
-import {render, RenderPosition} from './render.js';
+import { render } from './framework/render.js';
+import {RenderPosition} from './render.js';
 import EventsModel from './model/events-model.js';
 
 const siteHeaderElement = document.querySelector('.trip-main');

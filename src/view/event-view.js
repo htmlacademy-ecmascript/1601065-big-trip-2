@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDateDifference } from '../utils.js';
 import dayjs from 'dayjs';
 
@@ -55,26 +55,19 @@ function createEventTemplate(event, offersByType, destination) {
   );
 }
 
-export default class EventView {
+export default class EventView extends AbstractView {
+  #event = null;
+  #offersByType = null;
+  #destinations = null;
+
   constructor({event, offersByType, destination}) {
-    this.event = event;
-    this.offersByType = offersByType;
-    this.destination = destination;
+    super();
+    this.#event = event;
+    this.#offersByType = offersByType;
+    this.#destinations = destination;
   }
 
-  getTemplate() {
-    return createEventTemplate(this.event, this.offersByType, this.destination);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventTemplate(this.#event, this.#offersByType, this.#destinations);
   }
 }

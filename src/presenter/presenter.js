@@ -2,7 +2,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 export default class BoardPresenter {
   sortComponent = new TripSortView();
@@ -25,16 +25,16 @@ export default class BoardPresenter {
       destinations: this.destinations,
       offersByType: this.eventsModel.getOffersByType(this.boardEvents[0].type)
     }),
-    this.eventListComponent.getElement());
+    this.eventListComponent.element);
 
     for (let i = 0; i < this.boardEvents.length; i++) {
-debugger
+
       render(new EventView({
         event: this.boardEvents[i],
         destination: this.eventsModel.getDestinationById(this.boardEvents[i].destination),
         offersByType: this.eventsModel.getOffersByType(this.boardEvents[i].type)
       }),
-      this.eventListComponent.getElement());
+      this.eventListComponent.element);
     }
   }
 }
