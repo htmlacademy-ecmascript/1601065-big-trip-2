@@ -22,14 +22,13 @@ export default class BoardPresenter {
     render(this.eventListComponent, this.boardContainer);
     render(new EventFormView({
       event: this.boardEvents[0],
-      // destinations: this.eventsModel.getDestinationById(this.boardEvents[0].destination),
       destinations: this.destinations,
-      // offers: this.eventsModel.getOffersByType(this.boardEvents[0].type)
       offersByType: this.eventsModel.getOffersByType(this.boardEvents[0].type)
     }),
     this.eventListComponent.getElement());
 
     for (let i = 0; i < this.boardEvents.length; i++) {
+debugger
       render(new EventView({
         event: this.boardEvents[i],
         destination: this.eventsModel.getDestinationById(this.boardEvents[i].destination),
