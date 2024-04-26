@@ -23,18 +23,7 @@ export default class BoardPresenter {
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = [...this.#eventsModel.offers];
 
-    render(this.#sortComponent, this.#boardContainer);
-    render(this.#eventListComponent, this.#boardContainer);
-    // render(new EventFormView({
-    //   event: this.#boardEvents[0],
-    //   allDestinations: this.destinations,
-    //   offersByType: this.#eventsModel.getOffersByType(this.#boardEvents[0].type)
-    // }),
-    // this.#eventListComponent.element);
-
-    for (let i = 0; i < this.#boardEvents.length; i++) {
-      this.#renderEvent(this.#boardEvents[i]);
-    }
+    this.#renderBoard();
   }
 
   #renderEvent(event, allDestinations, offersByType) {
@@ -71,5 +60,15 @@ export default class BoardPresenter {
     }
     render(eventComponent, this.#eventListComponent.element);
   }
+
+  #renderBoard() {
+    render(this.#sortComponent, this.#boardContainer);
+    render(this.#eventListComponent, this.#boardContainer);
+
+    for (let i = 0; i < this.#boardEvents.length; i++) {
+      this.#renderEvent(this.#boardEvents[i]);
+    }
+  }
 }
+
 

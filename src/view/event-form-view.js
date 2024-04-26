@@ -152,7 +152,6 @@ export default class EventFormView extends AbstractView {
   #handleFormSubmit = null;
 
   constructor({event, offersByType, allDestinations, onFormSubmit}) {
-    debugger
     super();
     this.#event = event;
     this.#destinations = allDestinations;
