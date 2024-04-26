@@ -147,17 +147,28 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 
 export default class EventFormView extends AbstractView {
   #event = null;
-  #destinations = null;
   #offersByType = null;
+  #destinations = null;
+  #handleFormSubmit = null;
 
-  constructor({event, destinations, offersByType}) {
+  constructor({event, offersByType, allDestinations, onFormSubmit}) {
+    debugger
     super();
     this.#event = event;
-    this.#destinations = destinations;
+    this.#destinations = allDestinations;
     this.#offersByType = offersByType;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
     return createEventEditTemplate(this.#event, this.#destinations, this.#offersByType);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

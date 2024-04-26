@@ -12,7 +12,7 @@ const eventsModel = new EventsModel();
 const boardPresenter = new BoardPresenter({boardContainer: boardElement,
   eventsModel,
 });
-
+debugger
 render(new TripFiltersView(), siteFiltersElement);
 render(new TripInfoView(), siteHeaderElement, RenderPosition.AFTERBEGIN);
 
