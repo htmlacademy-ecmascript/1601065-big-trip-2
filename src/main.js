@@ -14,7 +14,7 @@ const boardPresenter = new BoardPresenter({boardContainer: boardElement,
   eventsModel,
 });
 const filters = generateFilter(eventsModel.events);
-debugger
+
 render(new TripFiltersView({filters}), siteFiltersElement);
 render(new TripInfoView(), siteHeaderElement, RenderPosition.AFTERBEGIN);
 
