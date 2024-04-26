@@ -1,26 +1,23 @@
-import {createElement} from '../render.js';
 import { EVENT_TYPES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEventTypeTemplate(eventType) {
   return(
-    `
-    ${EVENT_TYPES.map((type) => {
+    `${EVENT_TYPES.map((type) => {
       const formattedType = type.toLocaleLowerCase();
 
       return (
-        `
-        <div class="event__type-item">
-        <input
-          id="event-type-${formattedType}-1"
-          class="event__type-input  visually-hidden"
-          type="radio"
-          name="event-type"
-          value="${formattedType}"
-          ${eventType === formattedType ? 'checked' : '' }
-        >
-        <label class="event__type-label  event__type-label--${formattedType}" for="event-type-taxi-1">${type}</label>
-      </div>
-      `
+        `<div class="event__type-item">
+            <input
+            id="event-type-${formattedType}-1"
+            class="event__type-input  visually-hidden"
+            type="radio"
+            name="event-type"
+            value="${formattedType}"
+            ${eventType === formattedType ? 'checked' : '' }
+          >
+          <label class="event__type-label  event__type-label--${formattedType}" for="event-type-taxi-1">${type}</label>
+        </div>`
       );
     }).join('')}
     `
@@ -28,14 +25,12 @@ function createEventTypeTemplate(eventType) {
 }
 
 function createOffersTemplate(offersByType, eventOffers) {
-
   if (offersByType.length === 0) {
     return '';
   }
 
   return (
-    `
-    <section class="event__section  event__section--offers">
+    `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
       ${offersByType.map((offerItem) => (
@@ -53,72 +48,41 @@ function createOffersTemplate(offersByType, eventOffers) {
         </div>`
     )).join('')}
       </div>
-    </section>
-        `
+    </section>`
   );
 }
 
-function createDestinationTemplate(allDestinations) {
-
-  if (allDestinations.length === 0) {
-    return '';
-  }
+function createDestinationTemplate(pointDestination) {
 
   return (
-    `
-    <section class="event__section  event__section--destination">
+    `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description"></p>
+      <p class="event__destination-description">${pointDestination.description}</p>
       <div class="event__photos-container">
-      ${allDestinations.map((destination) => {
-      const picture = destination.pictures;
+      ${pointDestination.pictures.map((picture) => (
+      `<div class="event__photos-tape">
+          <img class="event__photo" src="${picture.src}" alt="${pointDestination.name}">
+       </div>`
 
-      if (picture.length === 0) {
-        return '';
-      }
-
-      const [pictureArray] = picture;
-
-      return (
-
-        `<div class="event__photos-tape">
-          <img class="event__photo" src="${pictureArray.src}" alt="${pictureArray.description}">
-        </div>`
-
-      )}).join('')}
+    )).join('')}
       </div>
-    </section>
-    `
+    </section>`
   );
 }
 
 function createOptionTemplate(allDestinations) {
 
   return (
-    `
-    <datalist id="destination-list-1">
-    ${allDestinations.map((destination) => {
-
-      if (destination.length === 0) {
-        return '';
-      }
-
-      return (
-        `
-      <option value="${destination.name}"></option>
-      `
-      );
-    }).join('')}
-    </datalist>
-    `
+    `<datalist id="destination-list-1">
+    ${allDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
+    </datalist>`
   );
 }
 
 function createEventEditTemplate(event, allDestinations, offersByType) {
 
   const {basePrice, destination, type, offers} = event;
-  const pointDestination = allDestinations.filter((typeDestination) => destination.includes(typeDestination.id));
-  const [arrayDestination] = pointDestination;
+  const pointDestination = allDestinations.find((item) => destination === item.id);
 
   return (
     `<li class="trip-events__item">
@@ -146,8 +110,8 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
             </label>
             <input class="event__input  event__input--destination"
             id="event-destination-1" type="text"
-            name="${arrayDestination.name}"
-            value="${arrayDestination.name}"
+            name="${pointDestination.name}"
+            value="${pointDestination.name}"
             list="destination-list-1">
             ${createOptionTemplate(allDestinations)}
           </div>
@@ -174,33 +138,36 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
         <section class="event__details">
         ${createOffersTemplate(offersByType, offers)}
 
-          ${createDestinationTemplate(allDestinations)}
+          ${createDestinationTemplate(pointDestination)}
         </section>
     </form>
   </li>`
   );
 }
 
-export default class EventFormView {
-  constructor({event, destinations, offersByType}) {
-    this.event = event;
-    this.destinations = destinations;
-    this.offersByType = offersByType;
+export default class EventFormView extends AbstractView {
+  #event = null;
+  #offersByType = null;
+  #destinations = null;
+  #handleFormSubmit = null;
+
+  constructor({event, offersByType, allDestinations, onFormSubmit}) {
+    super();
+    this.#event = event;
+    this.#destinations = allDestinations;
+    this.#offersByType = offersByType;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createEventEditTemplate(this.event, this.destinations, this.offersByType);
+  get template() {
+    return createEventEditTemplate(this.#event, this.#destinations, this.#offersByType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

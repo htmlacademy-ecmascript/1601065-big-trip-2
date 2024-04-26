@@ -1,11 +1,13 @@
-import {createElement} from '../render.js';
-import { getDateDifference } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { getDateDifference } from '../utils/events.js';
 import dayjs from 'dayjs';
 
-function createEventTemplate(event, offersByType, destination) {
+function createEventTemplate(event, offersByType, allDestinations) {
 
   const { isFavorite, basePrice, dateFrom, dateTo, type} = event;
   const pointOffers = offersByType.filter((typeOffer) => event.offers.includes(typeOffer.id));
+  const pointDestination = allDestinations.filter((typeDestination) => event.destination.includes(typeDestination.id));
+  const [arrayDestination] = pointDestination;
   const fromTime = dayjs(dateFrom).format('HH:mm');
   const toTime = dayjs(dateTo).format('HH:mm');
 
@@ -16,7 +18,7 @@ function createEventTemplate(event, offersByType, destination) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${arrayDestination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime=${dateFrom}>${fromTime}</time>
@@ -46,7 +48,6 @@ function createEventTemplate(event, offersByType, destination) {
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
           </svg>
         </button>
-
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -55,26 +56,29 @@ function createEventTemplate(event, offersByType, destination) {
   );
 }
 
-export default class EventView {
-  constructor({event, offersByType, destination}) {
-    this.event = event;
-    this.offersByType = offersByType;
-    this.destination = destination;
+export default class EventView extends AbstractView {
+  #event = null;
+  #offersByType = null;
+  #destinations = null;
+  #handleEditClick = null;
+
+  constructor({event, offersByType, allDestinations, onEditClick}) {
+    super();
+    this.#event = event;
+    this.#offersByType = offersByType;
+    this.#destinations = allDestinations;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createEventTemplate(this.event, this.offersByType, this.destination);
+  get template() {
+    return createEventTemplate(this.#event, this.#offersByType, this.#destinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }
