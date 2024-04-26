@@ -3,6 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
 import { render, replace } from '../framework/render.js';
+import NoEventView from '../view/no-event-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -64,6 +65,11 @@ export default class BoardPresenter {
   #renderBoard() {
     render(this.#sortComponent, this.#boardContainer);
     render(this.#eventListComponent, this.#boardContainer);
+debugger
+    if (this.#boardEvents.every((event) => event.isArchive)) {
+      render(new NoEventView(), this.#eventListComponent.element);
+      return;
+    }
 
     for (let i = 0; i < this.#boardEvents.length; i++) {
       this.#renderEvent(this.#boardEvents[i]);

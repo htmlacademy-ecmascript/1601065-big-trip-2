@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDateDifference } from '../utils.js';
+import { getDateDifference } from '../utils/task.js';
 import dayjs from 'dayjs';
 
 function createEventTemplate(event, offersByType, allDestinations) {

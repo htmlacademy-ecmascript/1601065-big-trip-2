@@ -4,10 +4,6 @@ dayjs.extend(duration);
 
 const DATE_FORMAT = 'MMMM D HH:mm';
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
@@ -28,4 +24,4 @@ const getDateDifference = (dateFrom, dateTo) => {
   return `${daysTemplate} ${hoursTemplate} ${minutesTemplate}`;
 };
 
-export {getRandomArrayElement, humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference};
+export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference};
