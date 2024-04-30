@@ -5,7 +5,7 @@ export const mockDestinations = [
     name: 'Chamonix',
     pictures: [
       {
-        src: 'http://picsum.photos/300/200?r=0.0762563005163317',
+        src: 'https://random.onl/images/pictures/np31.jpg',
         description: 'Chamonix parliament building'
       }
     ]
