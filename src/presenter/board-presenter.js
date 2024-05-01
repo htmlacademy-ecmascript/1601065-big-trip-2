@@ -28,9 +28,8 @@ export default class BoardPresenter {
   }
 
   #renderEvent(event, allDestinations, offersByType) {
-    debugger
     allDestinations = this.destinations;
-    offersByType = this.#eventsModel.getOffersByType(this.#boardEvents[0].type);
+    offersByType = this.#eventsModel.getOffersByType(event.type);
 
     const escKeyDownHandler = (evt) => {
 
@@ -43,6 +42,7 @@ export default class BoardPresenter {
 
     const eventComponent = new EventView({
       event, allDestinations, offersByType,
+
       onEditClick: () => {
         replaceCardToForm();
         document.addEventListener('keydown', escKeyDownHandler);
@@ -51,10 +51,17 @@ export default class BoardPresenter {
 
     const eventEditComponent = new EventFormView({
       event, allDestinations, offersByType,
+
+      onEditClick: () => {
+        replaceFormToCard();
+        document.addEventListener('keydown', escKeyDownHandler);
+      },
+
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
+
     });
 
     function replaceCardToForm() {
@@ -71,15 +78,14 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer);
     render(this.#eventListComponent, this.#boardContainer);
 
-    if (this.#boardEvents.every((event) => event.isFavorite)) {
+    if (this.#boardEvents.length === 0) {
       render(new NoEventView(), this.#eventListComponent.element);
       return;
     }
 
-    for (let i = 0; i < this.#boardEvents.length; i++) {
-      this.#renderEvent(this.#boardEvents[i]);
-
-    }
+    this.#boardEvents.forEach((item) => {
+      this.#renderEvent(item);
+    });
   }
 }
 

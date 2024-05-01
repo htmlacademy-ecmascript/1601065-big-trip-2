@@ -24,7 +24,7 @@ const getDateDifference = (dateFrom, dateTo) => {
   return `${daysTemplate} ${hoursTemplate} ${minutesTemplate}`;
 };
 
-function isEventExpiringToday(dueDate) {
+function isEventToday(dueDate) {
   return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
 }
 
@@ -36,4 +36,4 @@ function isEventBefore(dueDate) {
   return dueDate && dayjs().isBefore(dueDate, 'D');
 }
 
-export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventExpiringToday, isEventExpired, isEventBefore};
+export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventExpired, isEventBefore};

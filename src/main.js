@@ -1,8 +1,8 @@
 import TripInfoView from './view/trip-info-view.js';
 import TripFiltersView from './view/trip-filters-view.js';
-import BoardPresenter from './presenter/presenter.js';
+import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './framework/render.js';
-import {RenderPosition} from './render.js';
+import { RenderPosition } from './render.js';
 import EventsModel from './model/events-model.js';
 import { generateFilter } from './mock/filter.js';
 

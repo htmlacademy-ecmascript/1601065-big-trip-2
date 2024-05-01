@@ -134,6 +134,9 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__rollup-btn" type="button">
+              <span class="visually-hidden">Open event</span>
+          </button>
         </header>
         <section class="event__details">
         ${createOffersTemplate(offersByType, offers)}
@@ -150,16 +153,20 @@ export default class EventFormView extends AbstractView {
   #offersByType = null;
   #destinations = null;
   #handleFormSubmit = null;
+  #handleEditClick = null;
 
-  constructor({event, offersByType, allDestinations, onFormSubmit}) {
+  constructor({event, offersByType, allDestinations, onFormSubmit, onEditClick}) {
     super();
     this.#event = event;
     this.#destinations = allDestinations;
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleEditClick = onEditClick;
 
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#handleEditClick);
   }
 
   get template() {
