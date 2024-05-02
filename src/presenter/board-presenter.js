@@ -27,9 +27,7 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #renderEvent(event, allDestinations, offersByType) {
-    allDestinations = this.destinations;
-    offersByType = this.#eventsModel.getOffersByType(event.type);
+  #renderEvent(event) {
 
     const escKeyDownHandler = (evt) => {
 
@@ -41,7 +39,9 @@ export default class BoardPresenter {
     };
 
     const eventComponent = new EventView({
-      event, allDestinations, offersByType,
+      event,
+      allDestinations: this.destinations,
+      offersByType: this.#eventsModel.getOffersByType(event.type),
 
       onEditClick: () => {
         replaceCardToForm();
@@ -50,7 +50,9 @@ export default class BoardPresenter {
     });
 
     const eventEditComponent = new EventFormView({
-      event, allDestinations, offersByType,
+      event,
+      allDestinations: this.destinations,
+      offersByType: this.#eventsModel.getOffersByType(event.type),
 
       onEditClick: () => {
         replaceFormToCard();
