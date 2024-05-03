@@ -3,7 +3,6 @@ import { getDateDifference } from '../utils/events.js';
 import dayjs from 'dayjs';
 
 function createEventTemplate(event, offersByType, allDestinations) {
-
   const { isFavorite, basePrice, dateFrom, dateTo, type} = event;
   const pointOffers = offersByType.filter((typeOffer) => event.offers.includes(typeOffer.id));
   const pointDestination = allDestinations.filter((typeDestination) => event.destination.includes(typeDestination.id));
@@ -63,6 +62,7 @@ export default class EventView extends AbstractView {
   #handleEditClick = null;
 
   constructor({event, offersByType, allDestinations, onEditClick}) {
+
     super();
     this.#event = event;
     this.#offersByType = offersByType;

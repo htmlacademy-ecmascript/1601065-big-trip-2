@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+
 function createTripInfoTemplate() {
   return (
     `<section class="trip-main__trip-info  trip-info">

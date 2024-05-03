@@ -5,16 +5,16 @@ function createFilterItemTemplate(filter, isChecked) {
 
   return (
     `<div class="trip-filters__filter">
-      <input
-      id="filter-${type}"
-      class="trip-filters__filter-input visually-hidden"
-      type="radio"
-      name="trip-filter"
-      value="everything" checked disabled
-      ${isChecked ? 'checked' : ''}
-      ${count === 0 ? 'disabled' : ''}>
-      <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
-    </div>`
+          <input
+          id="filter-${type}"
+          class="trip-filters__filter-input visually-hidden"
+          type="radio"
+          name="trip-filter"
+          value="everything" checked disabled
+          ${isChecked ? 'checked' : ''}
+          ${count === 0 ? 'disabled' : ''}>
+          <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
+      </div>`
   );
 }
 

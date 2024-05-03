@@ -27,29 +27,43 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #renderEvent(event, allDestinations, offersByType) {
-    allDestinations = this.destinations;
-    offersByType = this.#eventsModel.getOffersByType(this.#boardEvents[0].type);
+  #renderEvent(event) {
+
     const escKeyDownHandler = (evt) => {
+
       if (evt.key === 'Escape') {
         evt.preventDefault();
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
+
     const eventComponent = new EventView({
-      event, allDestinations, offersByType,
+      event,
+      allDestinations: this.destinations,
+      offersByType: this.#eventsModel.getOffersByType(event.type),
+
       onEditClick: () => {
         replaceCardToForm();
         document.addEventListener('keydown', escKeyDownHandler);
       }
     });
+
     const eventEditComponent = new EventFormView({
-      event, allDestinations, offersByType,
+      event,
+      allDestinations: this.destinations,
+      offersByType: this.#eventsModel.getOffersByType(event.type),
+
+      onEditClick: () => {
+        replaceFormToCard();
+        document.addEventListener('keydown', escKeyDownHandler);
+      },
+
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
+
     });
 
     function replaceCardToForm() {
@@ -65,16 +79,15 @@ export default class BoardPresenter {
   #renderBoard() {
     render(this.#sortComponent, this.#boardContainer);
     render(this.#eventListComponent, this.#boardContainer);
-debugger
-    if (this.#boardEvents.every((event) => event.isArchive)) {
+
+    if (this.#boardEvents.length === 0) {
       render(new NoEventView(), this.#eventListComponent.element);
       return;
     }
 
-    for (let i = 0; i < this.#boardEvents.length; i++) {
-      this.#renderEvent(this.#boardEvents[i]);
-    }
+    this.#boardEvents.forEach((item) => {
+      this.#renderEvent(item);
+    });
   }
 }
-
 
