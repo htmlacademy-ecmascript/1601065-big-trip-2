@@ -10,6 +10,7 @@ export default class BoardPresenter {
   #eventsModel = null;
   #sortComponent = new TripSortView();
   #eventListComponent = new TripEventsListView();
+  #noEventComponent = new NoEventView();
 
   #boardEvents = [];
 
@@ -24,7 +25,9 @@ export default class BoardPresenter {
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = [...this.#eventsModel.offers];
 
+    this.#renderSort();
     this.#renderBoard();
+    this.#renderNoEventComponent();
   }
 
   #renderEvent(event) {
@@ -76,12 +79,19 @@ export default class BoardPresenter {
     render(eventComponent, this.#eventListComponent.element);
   }
 
-  #renderBoard() {
+  #renderSort() {
     render(this.#sortComponent, this.#boardContainer);
+  }
+
+  #renderNoEventComponent() {
+    render(this.#noEventComponent, this.#eventListComponent.element);
+  }
+
+  #renderBoard() {
     render(this.#eventListComponent, this.#boardContainer);
 
     if (this.#boardEvents.length === 0) {
-      render(new NoEventView(), this.#eventListComponent.element);
+      this.#renderNoEventComponent();
       return;
     }
 
@@ -89,5 +99,6 @@ export default class BoardPresenter {
       this.#renderEvent(item);
     });
   }
+
 }
 
