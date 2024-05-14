@@ -62,7 +62,6 @@ export default class EventView extends AbstractView {
   #handleEditClick = null;
 
   constructor({event, offersByType, allDestinations, onEditClick}) {
-
     super();
     this.#event = event;
     this.#offersByType = offersByType;

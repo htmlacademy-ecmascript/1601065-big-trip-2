@@ -1,11 +1,12 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
-import EventFormView from '../view/event-form-view.js';
-import EventView from '../view/event-view.js';
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
+import EventPresenter from '../presenter/event-presenter.js';
+import EventsModel from '../model/events-model.js';
 
 export default class BoardPresenter {
+  eventComponent = null;
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = new TripSortView();
@@ -27,56 +28,18 @@ export default class BoardPresenter {
 
     this.#renderSort();
     this.#renderBoard();
-    this.#renderNoEventComponent();
   }
 
   #renderEvent(event) {
-
-    const escKeyDownHandler = (evt) => {
-
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const eventComponent = new EventView({
-      event,
-      allDestinations: this.destinations,
-      offersByType: this.#eventsModel.getOffersByType(event.type),
-
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const boardElement = document.querySelector('.trip-events');
+    const eventsModel = new EventsModel();
+    const eventPresenter = new EventPresenter({
+      eventComponent: this.#eventListComponent.element,
+      boardContainer: boardElement,
+      eventsModel
     });
 
-    const eventEditComponent = new EventFormView({
-      event,
-      allDestinations: this.destinations,
-      offersByType: this.#eventsModel.getOffersByType(event.type),
-
-      onEditClick: () => {
-        replaceFormToCard();
-        document.addEventListener('keydown', escKeyDownHandler);
-      },
-
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-
-    });
-
-    function replaceCardToForm() {
-      replace(eventEditComponent, eventComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(eventComponent, eventEditComponent);
-    }
-    render(eventComponent, this.#eventListComponent.element);
+    eventPresenter.init(event);
   }
 
   #renderSort() {
