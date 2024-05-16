@@ -11,6 +11,7 @@ export default class BoardPresenter {
   #noEventComponent = new NoEventView();
 
   #boardEvents = [];
+  #eventPresenters = new Map();
 
   constructor({boardContainer, eventsModel}) {
     this.#boardContainer = boardContainer;
@@ -35,10 +36,17 @@ export default class BoardPresenter {
     });
 
     eventPresenter.init(event);
+    this.#eventPresenters.set(event.id, eventPresenter);
   }
 
   #renderSort() {
     render(this.#sortComponent, this.#boardContainer);
+  }
+
+  #clearEventList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+    // remove(this.#sortComponent);
   }
 
   #renderNoEventComponent() {

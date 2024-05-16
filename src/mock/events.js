@@ -1,4 +1,5 @@
-
+import {nanoid} from 'nanoid';
+import {getRandomArrayElement} from '../utils/common.js';
 
 const mockEvents = [
   {
@@ -26,4 +27,11 @@ const mockEvents = [
   }
 ];
 
-export {mockEvents};
+function getRandomEvent() {
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(mockEvents)
+  };
+}
+
+export {mockEvents, getRandomEvent};
