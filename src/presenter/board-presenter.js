@@ -3,6 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
+import { updateItem } from '../utils/common.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -38,6 +39,11 @@ export default class BoardPresenter {
     eventPresenter.init(event);
     this.#eventPresenters.set(event.id, eventPresenter);
   }
+
+  #handleTaskChange = (updatedEvent) => {
+    this.#boardEvents = updateItem(this.#boardEvents, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
 
   #renderSort() {
     render(this.#sortComponent, this.#boardContainer);
