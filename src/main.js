@@ -9,10 +9,13 @@ import { generateFilter } from './mock/filter.js';
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteFiltersElement = document.querySelector('.trip-controls__filters');
 const boardElement = document.querySelector('.trip-events');
+
 const eventsModel = new EventsModel();
-const boardPresenter = new BoardPresenter({boardContainer: boardElement,
+const boardPresenter = new BoardPresenter({
+  boardContainer: boardElement,
   eventsModel,
 });
+
 const filters = generateFilter(eventsModel.events);
 
 render(new TripFiltersView({filters}), siteFiltersElement);

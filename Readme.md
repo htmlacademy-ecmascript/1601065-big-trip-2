@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Светлана Зубарева](https://up.htmlacademy.ru/ecmascript-individual/2/user/1601065).
-* Наставник: [Алексей Хабиров] (https://htmlacademy.ru/profile/alex_khab).
+* Наставник: [Алексей Хабиров](https://htmlacademy.ru/profile/alex_khab).
 
 ---
 

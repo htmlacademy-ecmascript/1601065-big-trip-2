@@ -3,10 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
-import EventsModel from '../model/events-model.js';
-
 export default class BoardPresenter {
-  eventComponent = null;
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = new TripSortView();
@@ -24,19 +21,17 @@ export default class BoardPresenter {
 
     this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
-    this.offers = [...this.#eventsModel.offers];
+    this.offers = this.#eventsModel.offers;
 
     this.#renderSort();
     this.#renderBoard();
   }
 
   #renderEvent(event) {
-    const boardElement = document.querySelector('.trip-events');
-    const eventsModel = new EventsModel();
     const eventPresenter = new EventPresenter({
-      eventComponent: this.#eventListComponent.element,
-      boardContainer: boardElement,
-      eventsModel
+      eventContainer: this.#eventListComponent.element,
+      eventsModel: this.#eventsModel,
+      destinations: this.destinations
     });
 
     eventPresenter.init(event);

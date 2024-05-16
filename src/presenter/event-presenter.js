@@ -1,31 +1,26 @@
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
-import TripEventsListView from '../view/trip-events-list-view.js';
 import { replace, render } from '../framework/render.js';
 
 export default class EventPresenter {
-  #eventContainer = null;
   #eventsModel = null;
+  #destinations = null;
   #eventComponent = null;
   #eventEditComponent = null;
-  #eventListComponent = new TripEventsListView();
+  #eventContainer = null;
 
-  #events = [];
 
-  constructor({boardContainer, eventsModel}) {
-    this.#eventContainer = boardContainer;
+  constructor({eventsModel, destinations, eventContainer}) {
     this.#eventsModel = eventsModel;
+    this.#destinations = destinations;
+    this.#eventContainer = eventContainer;
   }
 
 
   init(event) {
-    this.#events = [...this.#eventsModel.events];
-    this.destinations = [...this.#eventsModel.destinations];
-    this.offers = [...this.#eventsModel.offers];
-
     this.#eventComponent = new EventView({
       event,
-      allDestinations: this.destinations,
+      allDestinations: this.#destinations,
       offersByType: this.#eventsModel.getOffersByType(event.type),
 
       onEditClick: () => {
@@ -36,7 +31,7 @@ export default class EventPresenter {
 
     this.#eventEditComponent = new EventFormView({
       event,
-      allDestinations: this.destinations,
+      allDestinations: this.#destinations,
       offersByType: this.#eventsModel.getOffersByType(event.type),
 
       onEditClick: () => {
@@ -51,12 +46,10 @@ export default class EventPresenter {
 
     });
 
-    render(this.#eventComponent, this.#eventListComponent.element);
+    render(this.#eventComponent, this.#eventContainer);
   }
 
-
   #escKeyDownHandler = (evt) => {
-
     if (evt.key === 'Escape') {
       evt.preventDefault();
       this.#replaceFormToCard();
@@ -71,5 +64,4 @@ export default class EventPresenter {
   #replaceFormToCard() {
     replace(this.#eventComponent, this.#eventEditComponent);
   }
-
 }
