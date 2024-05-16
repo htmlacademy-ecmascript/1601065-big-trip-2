@@ -1,6 +1,6 @@
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
-import { replace, render } from '../framework/render.js';
+import { replace, render, remove } from '../framework/render.js';
 
 export default class EventPresenter {
   #eventsModel = null;
@@ -18,6 +18,9 @@ export default class EventPresenter {
 
 
   init(event) {
+    const prevEventComponent = this.#eventComponent;
+    const prevEventEditComponent = this.#eventEditComponent;
+
     this.#eventComponent = new EventView({
       event,
       allDestinations: this.#destinations,
@@ -46,8 +49,28 @@ export default class EventPresenter {
 
     });
 
-    render(this.#eventComponent, this.#eventContainer);
+    if (prevEventComponent === null || prevEventEditComponent === null) {
+      render(this.#eventComponent, this.#eventContainer);
+      return;
+    }
+
+    if (this.#eventContainer.contains(prevEventComponent.element)) {
+      replace(this.#eventComponent, prevEventComponent);
+    }
+
+    if (this.#eventContainer.contains(prevEventEditComponent.element)) {
+      replace(this.#eventEditComponent, prevEventEditComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventEditComponent);
   }
+
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
+  }
+
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
