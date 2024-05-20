@@ -8,14 +8,15 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventContainer = null;
+  #onClickFavorite = null;
 
 
-  constructor({eventsModel, destinations, eventContainer}) {
+  constructor({eventsModel, destinations, eventContainer, onClickFavoriteButton}) {
     this.#eventsModel = eventsModel;
     this.#destinations = destinations;
     this.#eventContainer = eventContainer;
+    this.#onClickFavorite = onClickFavoriteButton;
   }
-
 
   init(event) {
     const prevEventComponent = this.#eventComponent;
@@ -25,11 +26,7 @@ export default class EventPresenter {
       event,
       allDestinations: this.#destinations,
       offersByType: this.#eventsModel.getOffersByType(event.type),
-
-      onEditClick: () => {
-        this.#replaceCardToForm();
-        document.addEventListener('keydown', this.#escKeyDownHandler);
-      }
+      onFavoriteClick: this.#handleFavoriteClick(event),
     });
 
     this.#eventEditComponent = new EventFormView({
@@ -87,4 +84,18 @@ export default class EventPresenter {
   #replaceFormToCard() {
     replace(this.#eventComponent, this.#eventEditComponent);
   }
+
+  #handleEditClick = () => {
+    this.#replaceCardToForm();
+  };
+
+  #handleFavoriteClick = (event) => {
+    this.#onClickFavorite({event, isFavorite: !event.isFavorite});
+  };
+
+  #handleFormSubmit = (event) => {
+    this.#onClickFavorite(event);
+    this.#replaceFormToCard();
+  };
+
 }

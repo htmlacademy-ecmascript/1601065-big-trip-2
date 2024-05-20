@@ -4,12 +4,15 @@ import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { updateItem } from '../utils/common.js';
+
+const eventFavoriteBtn = document.querySelector('.event__favorite-btn');
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = new TripSortView();
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
+  #onClickFavorite = eventFavoriteBtn;
 
   #boardEvents = [];
   #eventPresenters = new Map();
@@ -24,6 +27,7 @@ export default class BoardPresenter {
     this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = this.#eventsModel.offers;
+    this.#onClickFavorite = eventFavoriteBtn;
 
     this.#renderSort();
     this.#renderBoard();
@@ -33,14 +37,15 @@ export default class BoardPresenter {
     const eventPresenter = new EventPresenter({
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
-      destinations: this.destinations
+      destinations: this.destinations,
+      onClickFavoriteButton: this.#onClickFavorite
     });
 
     eventPresenter.init(event);
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  #handleTaskChange = (updatedEvent) => {
+  #handleEventChange = (updatedEvent) => {
     this.#boardEvents = updateItem(this.#boardEvents, updatedEvent);
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
@@ -52,7 +57,6 @@ export default class BoardPresenter {
   #clearEventList() {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
-    // remove(this.#sortComponent);
   }
 
   #renderNoEventComponent() {
