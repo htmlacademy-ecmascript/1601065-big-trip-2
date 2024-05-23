@@ -31,12 +31,18 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #renderEvent(event) {
     const eventPresenter = new EventPresenter({
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
       destinations: this.destinations,
-      onDataChange: this.#handleEventChange
+      // onDataChange: this.#handleEventChange
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange
     });
 
     eventPresenter.init(event);
