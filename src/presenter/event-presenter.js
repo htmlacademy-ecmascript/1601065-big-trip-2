@@ -43,17 +43,8 @@ export default class EventPresenter {
       event,
       allDestinations: this.#destinations,
       offersByType: this.#eventsModel.getOffersByType(event.type),
-
-      onEditClick: () => {
-        this.#replaceCardToForm();
-        document.addEventListener('keydown', this.#escKeyDownHandler);
-      },
-
-      onFormSubmit: () => {
-        this.#replaceFormToCard();
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
-      }
-
+      onEditClick:  this.#closeForm,
+      onFormSubmit: this.#handleFormSubmit,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -84,12 +75,15 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
+  #closeForm = () => {
+    this.#replaceFormToCard();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#replaceFormToCard();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#closeForm();
     }
   };
 
@@ -106,6 +100,7 @@ export default class EventPresenter {
 
   #handleEditClick = () => {
     this.#replaceCardToForm();
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFavoriteClick = () => {
@@ -116,5 +111,4 @@ export default class EventPresenter {
     this.#handleDataChange();
     this.#replaceFormToCard();
   };
-
 }
