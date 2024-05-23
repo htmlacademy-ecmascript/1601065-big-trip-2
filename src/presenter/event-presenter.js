@@ -55,8 +55,6 @@ export default class EventPresenter {
       }
 
     });
-    console.log(this.#eventEditComponent)
-    console.log(this.#eventComponent)
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventComponent, this.#eventContainer);
