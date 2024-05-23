@@ -8,17 +8,18 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventContainer = null;
-  #onClickFavorite = null;
+  #handleDataChange = null;
+  #event = null;
 
-
-  constructor({eventsModel, destinations, eventContainer, onClickFavoriteButton}) {
+  constructor({eventsModel, destinations, eventContainer, onDataChange}) {
     this.#eventsModel = eventsModel;
     this.#destinations = destinations;
     this.#eventContainer = eventContainer;
-    this.#onClickFavorite = onClickFavoriteButton;
+    this.#handleDataChange = onDataChange;
   }
 
   init(event) {
+    this.#event = event;
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
@@ -26,7 +27,8 @@ export default class EventPresenter {
       event,
       allDestinations: this.#destinations,
       offersByType: this.#eventsModel.getOffersByType(event.type),
-      onFavoriteClick: this.#handleFavoriteClick(event),
+      onFavoriteClick: this.#handleFavoriteClick,
+      onEditClick: this.#handleEditClick,
     });
 
     this.#eventEditComponent = new EventFormView({
@@ -35,11 +37,12 @@ export default class EventPresenter {
       offersByType: this.#eventsModel.getOffersByType(event.type),
 
       onEditClick: () => {
-        this.#replaceFormToCard();
+        this.#replaceCardToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
       },
 
       onFormSubmit: () => {
+        debugger
         this.#replaceFormToCard();
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       }
@@ -89,12 +92,12 @@ export default class EventPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFavoriteClick = (event) => {
-    this.#onClickFavorite({event, isFavorite: !event.isFavorite});
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
   };
 
-  #handleFormSubmit = (event) => {
-    this.#onClickFavorite(event);
+  #handleFormSubmit = () => {
+    this.#handleDataChange();
     this.#replaceFormToCard();
   };
 

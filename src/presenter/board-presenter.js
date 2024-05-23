@@ -5,14 +5,13 @@ import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { updateItem } from '../utils/common.js';
 
-const eventFavoriteBtn = document.querySelector('.event__favorite-btn');
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = new TripSortView();
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
-  #onClickFavorite = eventFavoriteBtn;
+
 
   #boardEvents = [];
   #eventPresenters = new Map();
@@ -27,7 +26,6 @@ export default class BoardPresenter {
     this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = this.#eventsModel.offers;
-    this.#onClickFavorite = eventFavoriteBtn;
 
     this.#renderSort();
     this.#renderBoard();
@@ -38,7 +36,7 @@ export default class BoardPresenter {
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
       destinations: this.destinations,
-      onClickFavoriteButton: this.#onClickFavorite
+      onDataChange: this.#handleEventChange
     });
 
     eventPresenter.init(event);
