@@ -88,6 +88,8 @@ export default class BoardPresenter {
     this.#sortEvents(sortType);
     // - Очищаем список
     // - Рендерим список заново
+    this.#clearEventList();
+    this.#renderEvent();
   };
 
   #renderSort() {
