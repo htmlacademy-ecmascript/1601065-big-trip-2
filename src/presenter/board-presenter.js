@@ -8,7 +8,7 @@ import { updateItem } from '../utils/common.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
-  #sortComponent = new TripSortView();
+  #sortComponent = null;
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
 
@@ -40,7 +40,6 @@ export default class BoardPresenter {
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
       destinations: this.destinations,
-      // onDataChange: this.#handleEventChange
       onDataChange: this.#handleEventChange,
       onModeChange: this.#handleModeChange
     });
@@ -54,7 +53,17 @@ export default class BoardPresenter {
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
+  #handleSortTypeChange = (sortType) => {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
+  };
+
   #renderSort() {
+    this.#sortComponent = new TripSortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
     render(this.#sortComponent, this.#boardContainer);
   }
 
