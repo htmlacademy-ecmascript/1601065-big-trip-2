@@ -37,4 +37,32 @@ function isEventPast(dueDate) {
   return dueDate && dayjs().isBefore(dueDate, 'D');
 }
 
-export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture};
+function getWeightForNullDate(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+}
+
+function sortEventsUp(taskA, taskB) {
+  const weight = getWeightForNullDate(taskA.dueDate, taskB.dueDate);
+
+  return weight ?? dayjs(taskA.dueDate).diff(dayjs(taskB.dueDate));
+}
+
+function sortEventDown(taskA, taskB) {
+  const weight = getWeightForNullDate(taskA.dueDate, taskB.dueDate);
+
+  return weight ?? dayjs(taskB.dueDate).diff(dayjs(taskA.dueDate));
+}
+
+export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture, sortEventDown, sortEventsUp};
