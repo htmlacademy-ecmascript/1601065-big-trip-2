@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import { SORT_TYPES } from '../const.js';
 
 function createFilterItemTemplate(filter, isChecked) {
   const {type, count} = filter;
@@ -8,9 +9,10 @@ function createFilterItemTemplate(filter, isChecked) {
           <input
           id="filter-${type}"
           class="trip-filters__filter-input visually-hidden"
+          data-sort-type="${SORT_TYPES.DEFAULT}"
           type="radio"
           name="trip-filter"
-          value="everything" checked disabled
+          value="everything"
           ${isChecked ? 'checked' : ''}
           ${count === 0 ? 'disabled' : ''}>
           <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>

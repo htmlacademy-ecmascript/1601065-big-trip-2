@@ -1,5 +1,3 @@
-
-
 const mockOffers = [
   {
     type: 'taxi',
