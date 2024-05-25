@@ -4,16 +4,14 @@ import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { updateItem } from '../utils/common.js';
-import { sortEventsUp, sortEventDown } from '../utils/events.js';
+import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES } from '../const.js';
-
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = null;
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
-
 
   #boardEvents = [];
   #eventPresenters = new Map();
@@ -60,34 +58,29 @@ export default class BoardPresenter {
   };
 
   #sortEvents(sortType) {
-    // 2. Этот исходный массив задач необходим,
-    // потому что для сортировки мы будем мутировать
-    // массив в свойстве _boardTasks СМОТРЕТЬ ЧТО МНЕ ТУТ ДЕЛАТЬ
     switch (sortType) {
-      case SORT_TYPES.Event:
-        this.#boardEvents.sort(sortEventsUp);
+      case SORT_TYPES.Day:
+        this.#boardEvents = [...this.#sourcedBoardEvents];
         break;
-      case SORT_TYPES.DATE_DOWN:
-        this.#boardEvents.sort(sortEventDown);
+      case SORT_TYPES.Time:
+        this.#boardEvents.sort(sortByTime);
+        break;
+      case SORT_TYPES.Price:
+        this.#boardEvents.sort(sortByPrice);
         break;
       default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
-        this.#boardEvents = [...this.#sourcedBoardEvents];
     }
 
     this.#currentSortType = sortType;
   }
 
   #handleSortTypeChange = (sortType) => {
-    // - Сортируем задачи
+
     if (this.#currentSortType === sortType) {
       return;
     }
 
     this.#sortEvents(sortType);
-    // - Очищаем список
-    // - Рендерим список заново
     this.#clearEventList();
     this.#renderEvent();
   };
