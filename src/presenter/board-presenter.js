@@ -82,7 +82,7 @@ export default class BoardPresenter {
 
     this.#sortEvents(sortType);
     this.#clearEventList();
-    this.#renderEvent();
+    this.#renderBoard();
   };
 
   #renderSort() {

@@ -45,7 +45,7 @@ function sortByTime(eventB, eventA) {
   const eventADuration = getEventDuration(eventA);
   const eventBDuration = getEventDuration(eventB) ;
 
-  return eventBDuration - eventADuration;
+  return eventADuration - eventBDuration;
 }
 
 function getEventDuration(event) {
