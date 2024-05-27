@@ -4,17 +4,19 @@ import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { updateItem } from '../utils/common.js';
-
+import { sortByPrice, sortByTime } from '../utils/events.js';
+import { SORT_TYPES } from '../const.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
-  #sortComponent = new TripSortView();
+  #sortComponent = null;
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
 
-
   #boardEvents = [];
   #eventPresenters = new Map();
+  #currentSortType = SORT_TYPES.Day;
+  #sourcedBoardEvents = [];
 
   constructor({boardContainer, eventsModel}) {
     this.#boardContainer = boardContainer;
@@ -26,6 +28,7 @@ export default class BoardPresenter {
     this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = this.#eventsModel.offers;
+    this.#sourcedBoardEvents = [...this.#eventsModel.events];
 
     this.#renderSort();
     this.#renderBoard();
@@ -40,7 +43,6 @@ export default class BoardPresenter {
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
       destinations: this.destinations,
-      // onDataChange: this.#handleEventChange
       onDataChange: this.#handleEventChange,
       onModeChange: this.#handleModeChange
     });
@@ -51,10 +53,43 @@ export default class BoardPresenter {
 
   #handleEventChange = (updatedEvent) => {
     this.#boardEvents = updateItem(this.#boardEvents, updatedEvent);
+    this.#sourcedBoardEvents = updateItem(this.#sourcedBoardEvents, updatedEvent);
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
+  #sortEvents(sortType) {
+    switch (sortType) {
+      case SORT_TYPES.Day:
+        this.#boardEvents = [...this.#sourcedBoardEvents];
+        break;
+      case SORT_TYPES.Time:
+        this.#boardEvents.sort(sortByTime);
+        break;
+      case SORT_TYPES.Price:
+        this.#boardEvents.sort(sortByPrice);
+        break;
+      default:
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortEvents(sortType);
+    this.#clearEventList();
+    this.#renderBoard();
+  };
+
   #renderSort() {
+    this.#sortComponent = new TripSortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
     render(this.#sortComponent, this.#boardContainer);
   }
 

@@ -37,4 +37,19 @@ function isEventPast(dueDate) {
   return dueDate && dayjs().isBefore(dueDate, 'D');
 }
 
-export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture};
+function sortByPrice(eventB, eventA) {
+  return eventA.basePrice - eventB.basePrice;
+}
+
+function sortByTime(eventB, eventA) {
+  const eventADuration = getEventDuration(eventA);
+  const eventBDuration = getEventDuration(eventB) ;
+
+  return eventADuration - eventBDuration;
+}
+
+function getEventDuration(event) {
+  return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
+}
+
+export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture, sortByPrice, sortByTime};

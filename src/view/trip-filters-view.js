@@ -10,7 +10,7 @@ function createFilterItemTemplate(filter, isChecked) {
           class="trip-filters__filter-input visually-hidden"
           type="radio"
           name="trip-filter"
-          value="everything" checked disabled
+          value="everything"
           ${isChecked ? 'checked' : ''}
           ${count === 0 ? 'disabled' : ''}>
           <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
