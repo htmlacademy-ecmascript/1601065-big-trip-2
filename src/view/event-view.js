@@ -1,4 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
+// import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDateDifference } from '../utils/events.js';
 import dayjs from 'dayjs';
 
@@ -63,8 +64,8 @@ function createEventButtonFavorite(isFavorite) {
   );
 }
 
-export default class EventView extends AbstractView {
-  #event = null;
+export default class EventView extends AbstractStatefulView {
+  // #event = null;
   #offersByType = null;
   #destinations = null;
   #handleEditClick = null;
@@ -72,7 +73,8 @@ export default class EventView extends AbstractView {
 
   constructor({event, offersByType, allDestinations, onEditClick, onFavoriteClick}) {
     super();
-    this.#event = event;
+    // this.#event = event;
+    this._setState(EventView.parseEventToState(event));
     this.#offersByType = offersByType;
     this.#destinations = allDestinations;
     this.#handleEditClick = onEditClick;
@@ -85,7 +87,8 @@ export default class EventView extends AbstractView {
   }
 
   get template() {
-    return createEventTemplate(this.#event, this.#offersByType, this.#destinations);
+    // return createEventTemplate(this.#event, this.#offersByType, this.#destinations);
+    return createEventTemplate(this._state, this.#offersByType, this.#destinations);
   }
 
   #editClickHandler = (evt) => {
@@ -97,4 +100,15 @@ export default class EventView extends AbstractView {
     evt.preventDefault();
     this.#handleFavoriteClick();
   };
+
+  static parseEventToState(event) {
+    return {...event,
+    };
+  }
+
+  static parseStateToEvent(state) {
+    const event = {...state};
+
+    return event;
+  }
 }
