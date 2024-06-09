@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createEventTypeTemplate(eventType) {
   return(
@@ -148,7 +148,7 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
   );
 }
 
-export default class EventFormView extends AbstractView {
+export default class EventFormView extends AbstractStatefulView {
   #event = null;
   #offersByType = null;
   #destinations = null;
@@ -163,6 +163,8 @@ export default class EventFormView extends AbstractView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
 
+    this._setState(EventFormView.parseEventToState(event, offersByType, allDestinations));
+
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn')
@@ -170,11 +172,21 @@ export default class EventFormView extends AbstractView {
   }
 
   get template() {
-    return createEventEditTemplate(this.#event, this.#destinations, this.#offersByType);
+    return createEventEditTemplate(this.#event, this.#offersByType, this.#destinations, this._state,
+    );
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(EventFormView.parseStateToPoint(this._state));
   };
+
+  static parseEventToState(event, offersByType, allDestinations) {
+    return {...event, ...offersByType, ...allDestinations,
+    };
+  }
+
+  static parseStateToTask(state) {
+    const event = {...state};
+  }
 }
