@@ -79,8 +79,7 @@ function createOptionTemplate(allDestinations) {
   );
 }
 
-function createEventEditTemplate(event, allDestinations, offersByType) {
-
+function createEventEditTemplate(event, offersByType, allDestinations) {
   const {basePrice, destination, type, offers} = event;
   const pointDestination = allDestinations.find((item) => destination === item.id);
 
@@ -165,28 +164,59 @@ export default class EventFormView extends AbstractStatefulView {
 
     this._setState(EventFormView.parseEventToState(event, offersByType, allDestinations));
 
+    this._restoreHandlers();
+  }
+
+  get template() {
+    return createEventEditTemplate(this._state, this.#offersByType, this.#destinations,
+    );
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#handleEditClick);
-  }
-
-  get template() {
-    return createEventEditTemplate(this.#event, this.#offersByType, this.#destinations, this._state,
-    );
+    this.element.querySelector('.event__type-item')
+      .addEventListener('click', this.#typeTransportToggleHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('click', this.#typePlaceToggleHandler);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EventFormView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(EventFormView.parseStateToEvent(this._state));
   };
 
-  static parseEventToState(event, offersByType, allDestinations) {
-    return {...event, ...offersByType, ...allDestinations,
+  #typeTransportToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type:!this._state.type,
+    });
+  };
+
+  #typePlaceToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+    });
+  };
+
+  static parseEventToState(event) {
+    return {...event,
+      type: event.type,
     };
   }
 
-  static parseStateToTask(state) {
+  static parseStateToEvent(state) {
     const event = {...state};
+
+    if (!event.type) {
+      event.type = null;
+    }
+
+    delete event.type;
+
+    return event;
   }
+
 }
