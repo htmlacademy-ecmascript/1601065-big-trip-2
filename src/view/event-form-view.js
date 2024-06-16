@@ -16,7 +16,7 @@ function createEventTypeTemplate(eventType) {
             value="${formattedType}"
             ${eventType === formattedType ? 'checked' : '' }
           >
-          <label class="event__type-label  event__type-label--${formattedType}" for="event-type-taxi-1">${type}</label>
+          <label class="event__type-label event__type-label--${formattedType}" for="event-type-${formattedType}-1">${type}</label>
         </div>`
       );
     }).join('')}
@@ -149,15 +149,11 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 }
 
 export default class EventFormView extends AbstractStatefulView {
-  #description = null;
   #destinations = null;
   #offers = null;
   #event = null;
   #handleFormSubmit = null;
   #handleEditClick = null;
-  #datepickerForm = null;
-  #datepickerTo = null;
-
 
   constructor({event, offersByType, allDestinations, onFormSubmit, onEditClick}) {
     super();
@@ -168,14 +164,12 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleEditClick = onEditClick;
 
 
-    this._setState(EventFormView.parsePointToState({point:event}));
+    this._setState(EventFormView.parsePointToState(event));
     this._restoreHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(
-      this.#event, this.#destinations, this.#offers, this._state
-    );
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
   }
 
   reset = (point) => this.updateElement({point});
@@ -189,8 +183,8 @@ export default class EventFormView extends AbstractStatefulView {
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#handleEditClick);
-    this.element.querySelector('.event__type-item')
-      .addEventListener('click', this.#typeChangeHandler);
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')
@@ -199,37 +193,36 @@ export default class EventFormView extends AbstractStatefulView {
       .addEventListener('change', this.#priceChangeHandler);
   };
 
-  #closingEditingFormClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleEditClick();
-  };
-
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EventFormView.parseStateToPoint(this._state));
   };
 
   #typeChangeHandler = (evt) => {
-    this.updateElement({point: {...this._state.point, type: evt.target.value, offers: []}});
+    this.updateElement({type: evt.target.value, offers: []});
   };
 
   #destinationChangeHandler = (evt) => {
     const selectedDestination = this.#destinations.find((pointDestination) => pointDestination.name === evt.target.value);
-    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
-    this.updateElement({point:{...this._state.point, destinations: selectedDestinationId}});
+
+    if (selectedDestination?.id) {
+      this.updateElement({ destination: selectedDestination.id});
+    }
   };
 
-  #offersChangeHandler = () => {
-    const checkedBoxed = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
-    this._setState({point:{...this._state.point, offers: checkedBoxed.map((element) => element.dataset.offerId)}});
+  #offersChangeHandler = (evt) => {
+    const newOffers = evt.target.checked
+      ? this._state.offers.concat(evt.target.id)
+      : this._state.offers.filter((item) => item !== evt.target.id);
+    this._setState({ offers: newOffers});
   };
 
   #priceChangeHandler = (evt) => {
-    this._setState({point: {...this._state.point, basePrice: evt.target.valueAsNumber}});
+    this._setState({basePrice: Number(evt.target.value)});
   };
 
 
-  static parsePointToState = ({point}) => ({point});
+  static parsePointToState = (event) => ({...event});
 
-  static parseStateToPoint = (state) => state.point;
+  static parseStateToPoint = (state) => ({...state});
 }
