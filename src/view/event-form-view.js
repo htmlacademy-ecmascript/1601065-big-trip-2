@@ -172,11 +172,11 @@ export default class EventFormView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#destinations, this.#offers);
   }
 
-  reset = (point) => this.updateElement({point});
-
-  removeElement = () => {
-    super.removeElement();
-  };
+  reset(event) {
+    this.updateElement(
+      EventFormView.parseEventToState(event),
+    );
+  }
 
   _restoreHandlers = () => {
     this.element.querySelector('form')
