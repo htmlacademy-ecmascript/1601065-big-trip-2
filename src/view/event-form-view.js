@@ -1,5 +1,8 @@
 import { EVENT_TYPES } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEventTypeTemplate(eventType) {
   return(
@@ -154,6 +157,8 @@ export default class EventFormView extends AbstractStatefulView {
   #event = null;
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #datepickerForm = null;
+  #datepickerTo = null;
 
   constructor({event, offersByType, allDestinations, onFormSubmit, onEditClick}) {
     super();
@@ -178,6 +183,20 @@ export default class EventFormView extends AbstractStatefulView {
     );
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerForm) {
+      this.#datepickerForm.destroy();
+      this.#datepickerForm = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
+
   _restoreHandlers = () => {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
@@ -191,6 +210,8 @@ export default class EventFormView extends AbstractStatefulView {
       .addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
+
+    this.#setDatepickers();
   };
 
   #formSubmitHandler = (evt) => {
@@ -221,6 +242,44 @@ export default class EventFormView extends AbstractStatefulView {
     this._setState({basePrice: Number(evt.target.value)});
   };
 
+  #dateFromCloseHandler = ([userDate]) => {
+    this._setState({...this._state, dateFrom: userDate});
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this._setState({...this._state, dateTo: userDate});
+    this.#datepickerForm.set('minDate', this._state.dateTo);
+  };
+
+  #setDatepickers = () => {
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    const commonConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      locale: {firstDayOfWeek:1},
+      'time_24hr': true
+
+    };
+
+    this.#datepickerForm = flatpickr(
+      dateFromElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dateFromCloseHandler,
+        maxDate: this._state.dateTo,
+      });
+
+    this.#datepickerTo = flatpickr(
+      dateToElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dateFromCloseHandler,
+        maxDate: this._state.dateTo,
+      });
+  };
 
   static parsePointToState = (event) => ({...event});
 
