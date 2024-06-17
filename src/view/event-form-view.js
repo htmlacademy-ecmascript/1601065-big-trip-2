@@ -275,9 +275,9 @@ export default class EventFormView extends AbstractStatefulView {
       dateToElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateFrom,
-        onClose: this.#dateFromCloseHandler,
-        maxDate: this._state.dateTo,
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToCloseHandler,
+        maxDate: this._state.dateFrom,
       });
   };
 
