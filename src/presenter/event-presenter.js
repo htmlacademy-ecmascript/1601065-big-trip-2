@@ -109,8 +109,8 @@ export default class EventPresenter {
     this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
   };
 
-  #handleFormSubmit = () => {
-    this.#handleDataChange();
+  #handleFormSubmit = (updateEvent) => {
+    this.#handleDataChange(updateEvent);
     this.#replaceFormToCard();
   };
 }
