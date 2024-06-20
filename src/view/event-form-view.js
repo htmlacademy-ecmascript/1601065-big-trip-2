@@ -157,7 +157,7 @@ export default class EventFormView extends AbstractStatefulView {
   #event = null;
   #handleFormSubmit = null;
   #handleEditClick = null;
-  #datepickerForm = null;
+  #datepickerFrom = null;
   #datepickerTo = null;
 
   constructor({event, offersByType, allDestinations, onFormSubmit, onEditClick}) {
@@ -186,9 +186,9 @@ export default class EventFormView extends AbstractStatefulView {
   removeElement = () => {
     super.removeElement();
 
-    if (this.#datepickerForm) {
-      this.#datepickerForm.destroy();
-      this.#datepickerForm = null;
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
     }
 
     if (this.#datepickerTo) {
@@ -249,7 +249,7 @@ export default class EventFormView extends AbstractStatefulView {
 
   #dateToCloseHandler = ([userDate]) => {
     this._setState({...this._state, dateTo: userDate});
-    this.#datepickerForm.set('minDate', this._state.dateTo);
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
   #setDatepickers = () => {
@@ -262,7 +262,7 @@ export default class EventFormView extends AbstractStatefulView {
 
     };
 
-    this.#datepickerForm = flatpickr(
+    this.#datepickerFrom = flatpickr(
       dateFromElement,
       {
         ...commonConfig,
@@ -275,9 +275,9 @@ export default class EventFormView extends AbstractStatefulView {
       dateToElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateFrom,
-        onClose: this.#dateFromCloseHandler,
-        maxDate: this._state.dateTo,
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToCloseHandler,
+        minDate: this._state.dateFrom,
       });
   };
 
