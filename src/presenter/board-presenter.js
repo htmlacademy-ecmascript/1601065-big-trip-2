@@ -23,6 +23,10 @@ export default class BoardPresenter {
     this.#eventsModel = eventsModel;
   }
 
+  get events() {
+    return this.#eventsModel.events;
+  }
+
   init() {
 
     this.#boardEvents = [...this.#eventsModel.events];
