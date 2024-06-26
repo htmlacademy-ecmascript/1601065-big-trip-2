@@ -3,16 +3,19 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
-// import { updateItem } from '../utils/common.js';
+// import EventView from '../view/event-form-view.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction } from '../const.js';
+
+const EVENT_COUNT_PER_STEP = 8;
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = null;
+  // #boardComponent = new EventView();
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
-
+  #renderedEventCount = EVENT_COUNT_PER_STEP;
   #eventPresenters = new Map();
   #currentSortType = SORT_TYPES.Day;
 
@@ -24,7 +27,6 @@ export default class BoardPresenter {
   }
 
   get events() {
-    debugger
     switch (sortType) {
       case SORT_TYPES.Day:
         [...this.#eventsModel.events]
@@ -65,17 +67,7 @@ export default class BoardPresenter {
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  // #handleEventChange = (updatedEvent) => {
-  //   this.#eventsModel.events = updateItem(this.#eventsModel.events, updatedEvent);
-  //   this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-  // };
-
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         this.#eventsModel.updateTask(updateType, update);
@@ -90,21 +82,17 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#eventPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        this.#clearBoard();
+        this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearBoard({resetRenderedEventCount: true, resetSortType: true});
+        this.#renderBoard();
         break;
     }
   };
@@ -116,32 +104,55 @@ export default class BoardPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearEventList();
+    this.#clearBoard({resetRenderedTaskCount: true});
     this.#renderBoard();
   };
 
   #renderSort() {
     this.#sortComponent = new TripSortView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
     render(this.#sortComponent, this.#boardContainer);
   }
 
-  #clearEventList() {
-    this.#eventPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventPresenters.clear();
-  }
+  // #clearEventList() {
+  //   this.#eventPresenters.forEach((presenter) => presenter.destroy());
+  //   this.#eventPresenters.clear();
+  // }
 
   #renderNoEventComponent() {
     render(this.#noEventComponent, this.#eventListComponent.element);
   }
 
+  #clearBoard({resetRenderedEventCount = false, resetSortType = false} = {}) {
+    const taskCount = this.tasks.length;
+
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#noEventComponent);
+
+    if (resetRenderedEventCount) {
+      this.#renderedEventCount = EVENT_COUNT_PER_STEP;
+    } else {
+      this.#renderedEventCount = Math.min(eventCount, this.#renderedEventCount);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
+  }
+
   #renderBoard() {
-
+debugger
     render(this.#eventListComponent, this.#boardContainer);
+    const events = this.events;
+    const eventCount = events.length;
 
-    if (this.#eventsModel.events.length === 0) {
+    if (taskCount === 0) {
       this.#renderNoEventComponent();
       return;
     }
@@ -149,6 +160,10 @@ export default class BoardPresenter {
     this.#eventsModel.events.forEach((item) => {
       this.#renderEvent(item);
     });
+
+    render(this.#eventListComponent, this.#boardContainer);
+
+    this.#renderBoard(events.slice(0, Math.min(eventCount, this.#renderedEventCount)));
   }
 
 }
