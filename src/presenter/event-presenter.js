@@ -1,6 +1,7 @@
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
 import { replace, render, remove } from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -106,11 +107,21 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    // this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      {...this.#event, isFavorite: !this.#event.isFavorite},
+    );
   };
 
   #handleFormSubmit = (updateEvent) => {
-    this.#handleDataChange(updateEvent);
+    // this.#handleDataChange(updateEvent);
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
     this.#replaceFormToCard();
   };
 }

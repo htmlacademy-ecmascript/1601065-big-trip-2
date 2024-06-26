@@ -13,26 +13,36 @@ export default class BoardPresenter {
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
 
-  #boardEvents = [];
   #eventPresenters = new Map();
   #currentSortType = SORT_TYPES.Day;
-  #sourcedBoardEvents = [];
 
   constructor({boardContainer, eventsModel}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
+
+    this.#eventsModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    debugger
+    switch (sortType) {
+      case SORT_TYPES.Day:
+        [...this.#eventsModel.events]
+      break;
+      case SORT_TYPES.Time:
+        [...this.#eventsModel.events].sort(sortByTime);
+      break;
+      case SORT_TYPES.Price:
+        [...this.#eventsModel.events].sort(sortByPrice);
+    }
+
     return this.#eventsModel.events;
   }
 
   init() {
 
-    this.#boardEvents = [...this.#eventsModel.events];
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = this.#eventsModel.offers;
-    this.#sourcedBoardEvents = [...this.#eventsModel.events];
 
     this.#renderSort();
     this.#renderBoard();
@@ -47,7 +57,7 @@ export default class BoardPresenter {
       eventContainer: this.#eventListComponent.element,
       eventsModel: this.#eventsModel,
       destinations: this.destinations,
-      onDataChange: this.#handleEventChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });
 
@@ -55,28 +65,26 @@ export default class BoardPresenter {
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  #handleEventChange = (updatedEvent) => {
-    this.#boardEvents = updateItem(this.#boardEvents, updatedEvent);
-    this.#sourcedBoardEvents = updateItem(this.#sourcedBoardEvents, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  // #handleEventChange = (updatedEvent) => {
+  //   this.#eventsModel.events = updateItem(this.#eventsModel.events, updatedEvent);
+  //   this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  // };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
   };
 
-  #sortEvents(sortType) {
-    switch (sortType) {
-      case SORT_TYPES.Day:
-        this.#boardEvents = [...this.#sourcedBoardEvents];
-        break;
-      case SORT_TYPES.Time:
-        this.#boardEvents.sort(sortByTime);
-        break;
-      case SORT_TYPES.Price:
-        this.#boardEvents.sort(sortByPrice);
-        break;
-      default:
-    }
-
-    this.#currentSortType = sortType;
-  }
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+  };
 
   #handleSortTypeChange = (sortType) => {
 
@@ -84,7 +92,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#sortEvents(sortType);
+    this.#currentSortType = sortType;
     this.#clearEventList();
     this.#renderBoard();
   };
@@ -107,14 +115,15 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
+
     render(this.#eventListComponent, this.#boardContainer);
 
-    if (this.#boardEvents.length === 0) {
+    if (this.#eventsModel.events.length === 0) {
       this.#renderNoEventComponent();
       return;
     }
 
-    this.#boardEvents.forEach((item) => {
+    this.#eventsModel.events.forEach((item) => {
       this.#renderEvent(item);
     });
   }
