@@ -3,9 +3,9 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
-import { updateItem } from '../utils/common.js';
+// import { updateItem } from '../utils/common.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
-import { SORT_TYPES } from '../const.js';
+import { SORT_TYPES, UpdateType, UserAction } from '../const.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -76,6 +76,17 @@ export default class BoardPresenter {
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_TASK:
+        this.#eventsModel.updateTask(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this.#eventsModel.addTask(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this.#eventsModel.deleteTask(updateType, update);
+        break;
+    }
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -84,6 +95,18 @@ export default class BoardPresenter {
     // - обновить часть списка (например, когда поменялось описание)
     // - обновить список (например, когда задача ушла в архив)
     // - обновить всю доску (например, при переключении фильтра)
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this.#eventPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
   };
 
   #handleSortTypeChange = (sortType) => {
