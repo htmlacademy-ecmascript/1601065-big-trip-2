@@ -1,23 +1,21 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
+import BoardView from '../view/board-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
-// import EventView from '../view/event-form-view.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction } from '../const.js';
-
-const EVENT_COUNT_PER_STEP = 8;
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = null;
-  // #boardComponent = new EventView();
   #eventListComponent = new TripEventsListView();
   #noEventComponent = new NoEventView();
-  #renderedEventCount = EVENT_COUNT_PER_STEP;
+  #boardComponent = new BoardView();
+  #renderedEventCount = null;
   #eventPresenters = new Map();
-  #currentSortType = SORT_TYPES.Day;
+  #currentSortType = SORT_TYPES;
 
   constructor({boardContainer, eventsModel}) {
     this.#boardContainer = boardContainer;
@@ -27,7 +25,7 @@ export default class BoardPresenter {
   }
 
   get events() {
-    switch (sortType) {
+    switch (this.#currentSortType) {
       case SORT_TYPES.Day:
         [...this.#eventsModel.events]
       break;
@@ -46,7 +44,6 @@ export default class BoardPresenter {
     this.destinations = [...this.#eventsModel.destinations];
     this.offers = this.#eventsModel.offers;
 
-    this.#renderSort();
     this.#renderBoard();
   }
 
@@ -54,28 +51,15 @@ export default class BoardPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #renderEvent(event) {
-    const eventPresenter = new EventPresenter({
-      eventContainer: this.#eventListComponent.element,
-      eventsModel: this.#eventsModel,
-      destinations: this.destinations,
-      onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange
-    });
-
-    eventPresenter.init(event);
-    this.#eventPresenters.set(event.id, eventPresenter);
-  }
-
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
+      case UserAction.UPDATE_EVENT:
         this.#eventsModel.updateTask(updateType, update);
         break;
-      case UserAction.ADD_TASK:
+      case UserAction.ADD_EVENT:
         this.#eventsModel.addTask(updateType, update);
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_EVENT:
         this.#eventsModel.deleteTask(updateType, update);
         break;
     }
@@ -113,21 +97,32 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
-
-    render(this.#sortComponent, this.#boardContainer);
+    render(this.#sortComponent, this.#boardComponent.element);
   }
 
-  // #clearEventList() {
-  //   this.#eventPresenters.forEach((presenter) => presenter.destroy());
-  //   this.#eventPresenters.clear();
-  // }
+  #renderEvent(event) {
+    const eventPresenter = new EventPresenter({
+      eventContainer: this.#eventListComponent.element,
+      eventsModel: this.#eventsModel,
+      destinations: this.destinations,
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange
+    });
+
+    eventPresenter.init(event);
+    this.#eventPresenters.set(event.id, eventPresenter);
+  }
+
+  #renderEvents(events) {
+    events.forEach((event) => this.#renderEvent(event));
+  }
 
   #renderNoEventComponent() {
     render(this.#noEventComponent, this.#eventListComponent.element);
   }
 
   #clearBoard({resetRenderedEventCount = false, resetSortType = false} = {}) {
-    const taskCount = this.tasks.length;
+    const eventCount = this.events.length;
 
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -136,7 +131,7 @@ export default class BoardPresenter {
     remove(this.#noEventComponent);
 
     if (resetRenderedEventCount) {
-      this.#renderedEventCount = EVENT_COUNT_PER_STEP;
+      this.#renderedEventCount;
     } else {
       this.#renderedEventCount = Math.min(eventCount, this.#renderedEventCount);
     }
@@ -147,23 +142,17 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
-debugger
     render(this.#eventListComponent, this.#boardContainer);
     const events = this.events;
     const eventCount = events.length;
 
-    if (taskCount === 0) {
+    if (eventCount === 0) {
       this.#renderNoEventComponent();
       return;
     }
-
-    this.#eventsModel.events.forEach((item) => {
-      this.#renderEvent(item);
-    });
-
-    render(this.#eventListComponent, this.#boardContainer);
-
-    this.#renderBoard(events.slice(0, Math.min(eventCount, this.#renderedEventCount)));
+    this.#renderSort();
+    render(this.#eventListComponent, this.#boardComponent.element);
+    this.#renderEvents(events.slice(0, Math.min(eventCount, this.#renderedEventCount)));
   }
 
 }

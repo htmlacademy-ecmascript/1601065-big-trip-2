@@ -5,12 +5,14 @@ import { render } from './framework/render.js';
 import { RenderPosition } from './render.js';
 import EventsModel from './model/events-model.js';
 import { generateFilter } from './mock/filter.js';
+import FilterModel from './model/filter-model.js';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteFiltersElement = document.querySelector('.trip-controls__filters');
 const boardElement = document.querySelector('.trip-events');
 
 const eventsModel = new EventsModel();
+const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: boardElement,
   eventsModel,
