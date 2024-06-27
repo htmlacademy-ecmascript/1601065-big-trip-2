@@ -6,6 +6,7 @@ import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction } from '../const.js';
+import { filters } from '../utils/filter.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -16,27 +17,36 @@ export default class BoardPresenter {
   #renderedEventCount = null;
   #eventPresenters = new Map();
   #currentSortType = SORT_TYPES;
+  #filterModel = null;
 
-  constructor({boardContainer, eventsModel}) {
+  constructor({boardContainer, eventsModel, filterModel}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    const filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filters[filterType](events);
     switch (this.#currentSortType) {
       case SORT_TYPES.Day:
         [...this.#eventsModel.events]
       break;
       case SORT_TYPES.Time:
-        [...this.#eventsModel.events].sort(sortByTime);
+        // [...this.#eventsModel.events].sort(sortByTime);
+        return filteredEvents.sort(sortByTime);
       break;
       case SORT_TYPES.Price:
-        [...this.#eventsModel.events].sort(sortByPrice);
+        // [...this.#eventsModel.events].sort(sortByPrice);
+        return filteredEvents.sort(sortByPrice);
     }
 
-    return this.#eventsModel.events;
+    // return this.#eventsModel.events;
+    return filteredEvents;
   }
 
   init() {
