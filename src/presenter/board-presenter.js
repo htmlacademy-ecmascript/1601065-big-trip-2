@@ -5,19 +5,21 @@ import BoardView from '../view/board-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
-import { SORT_TYPES, UpdateType, UserAction } from '../const.js';
+import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const.js';
 import { filters } from '../utils/filter.js';
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
   #sortComponent = null;
   #eventListComponent = new TripEventsListView();
-  #noEventComponent = new NoEventView();
+  // #noEventComponent = new NoEventView();
+  #noEventComponent = null;
   #boardComponent = new BoardView();
   #renderedEventCount = null;
   #eventPresenters = new Map();
   #currentSortType = SORT_TYPES;
   #filterModel = null;
+  #filterType = FILTER_TYPES.Everything;
 
   constructor({boardContainer, eventsModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -29,9 +31,11 @@ export default class BoardPresenter {
   }
 
   get events() {
-    const filterType = this.#filterModel.filter;
+    // const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
-    const filteredEvents = filters[filterType](events);
+    // const filteredEvents = filters[filterType](events);
+    const filteredEvents = filters[this.#filterType](events);
     switch (this.#currentSortType) {
       case SORT_TYPES.Day:
         [...this.#eventsModel.events]
@@ -128,6 +132,10 @@ export default class BoardPresenter {
   }
 
   #renderNoEventComponent() {
+    this.#noEventComponent = new NoEventView({
+      filterType: this.#filterType
+    });
+
     render(this.#noEventComponent, this.#eventListComponent.element);
   }
 
