@@ -1,6 +1,9 @@
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
 import { replace, render, remove } from '../framework/render.js';
+import { UserAction, UpdateType } from '../const.js';
+import { isEventsRepeating, isDatesEqual } from '../utils/events.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -45,6 +48,7 @@ export default class EventPresenter {
       offersByType: this.#eventsModel.getOffersByType(event.type),
       onEditClick:  this.#closeForm,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -106,11 +110,35 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      {...this.#event, isFavorite: !this.#event.isFavorite},
+    );
   };
 
-  #handleFormSubmit = (updateEvent) => {
-    this.#handleDataChange(updateEvent);
+  // #handleFormSubmit = (updateEvent) => {
+    #handleFormSubmit = (update) => {
+      // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
+      // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+      const isMinorUpdate =
+        !isDatesEqual(this.#event.dueDate, update.dueDate) ||
+        isEventRepeating(this.#event.repeating) !== isEventRepeating(update.repeating);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
+    // this.#replaceFormToCard();
   };
 }

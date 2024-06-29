@@ -52,4 +52,13 @@ function getEventDuration(event) {
   return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
 }
 
-export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture, sortByPrice, sortByTime};
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
+function isEventsRepeating(repeating) {
+  return Object.values(repeating).some(Boolean);
+}
+
+
+export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture, sortByPrice, sortByTime, isDatesEqual, isEventsRepeating};

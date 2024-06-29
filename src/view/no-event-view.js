@@ -10,7 +10,15 @@ function createNoEventTemplate() {
 }
 
 export default class NoEventView extends AbstractView {
+  #filterType = null;
+
+  constructor({filterType}) {
+    super();
+    this.#filterType = filterType;
+  }
+
   get template() {
-    return createNoEventTemplate();
+    // return createNoEventTemplate();
+    return createNoEventTemplate(this.#filterType);
   }
 }
