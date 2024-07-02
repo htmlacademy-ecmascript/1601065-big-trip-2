@@ -83,6 +83,7 @@ function createOptionTemplate(allDestinations) {
 }
 
 function createEventEditTemplate(event, allDestinations, offersByType) {
+  console.log(allDestinations)
 
   const {basePrice, destination, type, offers} = event;
   const pointDestination = allDestinations.find((item) => destination === item.id);

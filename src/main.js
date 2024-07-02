@@ -1,19 +1,11 @@
 import TripInfoView from './view/trip-info-view.js';
-import TripFiltersView from './view/trip-filters-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './framework/render.js';
 import { RenderPosition } from './render.js';
 import EventsModel from './model/events-model.js';
-// import { generateFilter } from './mock/filter.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-
-// const filters = [
-//   {
-//     type: 'all',
-//     count: 0,
-//   },
-// ];
+import NewEventButtonView from './view/new-event-button-view.js';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteFiltersElement = document.querySelector('.trip-controls__filters');
@@ -25,6 +17,7 @@ const boardPresenter = new BoardPresenter({
   boardContainer: boardElement,
   eventsModel,
   filterModel,
+  onNewEventDestroy: handleNewEventFormClose
 });
 
 const filterPresenter = new FilterPresenter({
@@ -33,14 +26,21 @@ const filterPresenter = new FilterPresenter({
   eventsModel
 });
 
-// const filters = generateFilter(eventsModel.events);
+const newEventButtonComponent = new NewEventButtonView({
+  onClick: handleNewEventButtonClick
+});
 
-// render(new TripFiltersView({filters}), siteFiltersElement);
+function handleNewEventFormClose() {
+  newEventButtonComponent.element.disabled = false;
+}
+
+function handleNewEventButtonClick() {
+  boardPresenter.createEvent();
+  newEventButtonComponent.element.disabled = true;
+}
+
 render(new TripInfoView(), siteHeaderElement, RenderPosition.AFTERBEGIN);
-// render(new TripFiltersView({
-//   filters,
-//   currentFilterType: 'all',
-//   onFilterTypeChange: () => {}
-// }), boardElement);
+render(newEventButtonComponent, siteHeaderElement);
+
 filterPresenter.init();
 boardPresenter.init();

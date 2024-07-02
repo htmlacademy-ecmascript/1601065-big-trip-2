@@ -1,9 +1,10 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
-import { render, remove } from '../framework/render.js';
 import BoardView from '../view/board-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
+import NewEventPresenter from './new-event-presenter.js';
+import { render, remove } from '../framework/render.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const.js';
 import { filters } from '../utils/filter.js';
@@ -14,17 +15,22 @@ export default class BoardPresenter {
   #eventListComponent = new TripEventsListView();
   #noEventComponent = null;
   #boardComponent = new BoardView();
-  // #renderedEventCount = null;
   #eventPresenters = new Map();
+  #newEventPresenter = null;
   #currentSortType = SORT_TYPES;
   #filterModel = null;
   #filterType = FILTER_TYPES.Everything;
-  // #destinations = null;
 
-  constructor({boardContainer, eventsModel, filterModel}) {
+  constructor({boardContainer, eventsModel, filterModel, onNewEventDestroy}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      eventListContainer: this.#eventListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewEventDestroy,
+    });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -49,7 +55,13 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
+  createEvent() {
+    this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.Everything);
+    this.#newEventPresenter.init();
+  }
+
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -127,7 +139,7 @@ export default class BoardPresenter {
   }
 
   #clearBoard({resetSortType = false} = {}) {
-
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
