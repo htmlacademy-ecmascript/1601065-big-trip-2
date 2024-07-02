@@ -171,7 +171,7 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleDeleteClick = onDeleteClick;
 
 
-    this._setState(EventFormView.parsePointToState(event));
+    this._setState(EventFormView.parseEventToState(event));
     this._restoreHandlers();
   }
 
@@ -220,7 +220,7 @@ export default class EventFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EventFormView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(EventFormView.parseStateToEvent(this._state));
   };
 
   #typeChangeHandler = (evt) => {
@@ -287,10 +287,10 @@ export default class EventFormView extends AbstractStatefulView {
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick(TaskEditView.parseStateToTask(this._state));
+    this.#handleDeleteClick(EventFormView.parseStateToEvent(this._state));
   };
 
-  static parsePointToState = (event) => ({...event});
+  static parseEventToState = (event) => ({...event});
 
-  static parseStateToPoint = (state) => ({...state});
+  static parseStateToEvent = (state) => ({...state});
 }

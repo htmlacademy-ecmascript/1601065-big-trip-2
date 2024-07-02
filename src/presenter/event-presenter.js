@@ -21,9 +21,9 @@ export default class EventPresenter {
   #handleModeChange = null;
   #mode = Mode.DEFAULT;
 
-  constructor({eventsModel, destinations, eventContainer, onDataChange, onModeChange}) {
+  constructor({eventsModel, eventContainer, onDataChange, onModeChange}) {
     this.#eventsModel = eventsModel;
-    this.#destinations = destinations;
+    this.#destinations = eventsModel.destinations;
     this.#eventContainer = eventContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -112,22 +112,21 @@ export default class EventPresenter {
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       {...this.#event, isFavorite: !this.#event.isFavorite},
     );
   };
 
-  // #handleFormSubmit = (updateEvent) => {
+
     #handleFormSubmit = (update) => {
-      // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
-      // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
       const isMinorUpdate =
-        !isDatesEqual(this.#event.dueDate, update.dueDate) ||
-        isEventRepeating(this.#event.repeating) !== isEventRepeating(update.repeating);
+      this.#event.dateFrom === update.dateFrom ||
+      this.#event.dateTo === update.dateTo ||
+      this.#event.basePrise === update.basePrise
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      false ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
     this.#replaceFormToCard();
@@ -139,6 +138,5 @@ export default class EventPresenter {
       UpdateType.MINOR,
       event,
     );
-    // this.#replaceFormToCard();
   };
 }
