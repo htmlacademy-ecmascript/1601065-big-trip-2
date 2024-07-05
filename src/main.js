@@ -8,7 +8,6 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import NewEventButtonView from './view/new-event-button-view.js';
 
 const siteHeaderElement = document.querySelector('.trip-main');
-const siteFiltersElement = document.querySelector('.trip-controls__filters');
 const boardElement = document.querySelector('.trip-events');
 
 const eventsModel = new EventsModel();

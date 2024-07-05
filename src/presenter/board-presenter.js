@@ -1,6 +1,5 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
-import BoardView from '../view/board-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
@@ -14,14 +13,13 @@ export default class BoardPresenter {
   #sortComponent = null;
   #eventListComponent = new TripEventsListView();
   #noEventComponent = null;
-  #boardComponent = new BoardView();
   #eventPresenters = new Map();
   #newEventPresenter = null;
   #currentSortType = SORT_TYPES;
   #filterModel = null;
   #filterType = FILTER_TYPES.Everything;
 
-  constructor({boardContainer, eventsModel, filterModel, onNewEventDestroy}) {
+  constructor({boardContainer, eventsModel, filterModel, onNewEventDestroy }) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
@@ -30,6 +28,8 @@ export default class BoardPresenter {
       eventListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewEventDestroy,
+      destinations: eventsModel.destinations,
+      offers: eventsModel.offers,
     });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -55,9 +55,9 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  createEvent() {
+  createEvent(event) {
     this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.Everything);
-    this.#newEventPresenter.init();
+    this.#newEventPresenter.init(event);
   }
 
   #handleModeChange = () => {
@@ -111,7 +111,7 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
-    render(this.#sortComponent, this.#boardComponent.element);
+    render(this.#sortComponent, this.#eventListComponent.element);
   }
 
   #renderEvent(event) {

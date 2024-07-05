@@ -1,6 +1,7 @@
 import { EVENT_TYPES } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -28,6 +29,7 @@ function createEventTypeTemplate(eventType) {
 }
 
 function createOffersTemplate(offersByType, eventOffers) {
+
   if (offersByType.length === 0) {
     return '';
   }
@@ -36,12 +38,12 @@ function createOffersTemplate(offersByType, eventOffers) {
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
-      ${offersByType.map((offerItem) => (
+      ${offersByType?.map((offerItem) => (
       `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden"
           id="${offerItem.id}"
           type="checkbox"
-          ${eventOffers.includes(offerItem.id) ? 'checked' : '' }
+          ${eventOffers?.includes(offerItem.id) || '' ? 'checked' : '' }
           >
           <label class="event__offer-label" for="${offerItem.id}">
             <span class="event__offer-title">${offerItem.title}</span>
@@ -49,13 +51,17 @@ function createOffersTemplate(offersByType, eventOffers) {
             <span class="event__offer-price">${offerItem.price}</span>
           </label>
         </div>`
-    )).join('')}
+    ) ).join('') || ''}
       </div>
     </section>`
   );
 }
 
 function createDestinationTemplate(pointDestination) {
+
+  if (pointDestination === undefined) {
+    return ''
+  }
 
   return (
     `<section class="event__section  event__section--destination">
@@ -64,10 +70,10 @@ function createDestinationTemplate(pointDestination) {
       <div class="event__photos-container">
       ${pointDestination.pictures.map((picture) => (
       `<div class="event__photos-tape">
-          <img class="event__photo" src="${picture.src}" alt="${pointDestination.name}">
+          <img class="event__photo" src="${picture.src}" alt="${he.encode(pointDestination.name)}">
        </div>`
 
-    )).join('')}
+    ) ).join('')}
       </div>
     </section>`
   );
@@ -77,14 +83,12 @@ function createOptionTemplate(allDestinations) {
 
   return (
     `<datalist id="destination-list-1">
-    ${allDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
+    ${allDestinations.map((destination) => `<option value="${he.encode(destination.name)}"></option>`).join('')}
     </datalist>`
   );
 }
 
 function createEventEditTemplate(event, allDestinations, offersByType) {
-  console.log(allDestinations)
-
   const {basePrice, destination, type, offers} = event;
   const pointDestination = allDestinations.find((item) => destination === item.id);
 
@@ -95,7 +99,7 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type || `Flight`}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -110,12 +114,12 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${event.type}
+              ${event.type || `Flight`}
             </label>
             <input class="event__input  event__input--destination"
             id="event-destination-1" type="text"
-            name="${pointDestination.name}"
-            value="${pointDestination.name}"
+            name="${he.encode(pointDestination?.name ||``)}}"
+            value="${he.encode(pointDestination?.name ||``)}"
             list="destination-list-1">
             ${createOptionTemplate(allDestinations)}
           </div>
@@ -133,7 +137,7 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice || `0`}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

@@ -2,8 +2,6 @@ import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
 import { replace, render, remove } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
-import { isEventsRepeating, isDatesEqual } from '../utils/events.js';
-
 
 const Mode = {
   DEFAULT: 'DEFAULT',
