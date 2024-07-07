@@ -28,8 +28,7 @@ export default class BoardPresenter {
       eventListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewEventDestroy,
-      destinations: eventsModel.destinations,
-      offers: eventsModel.offers,
+      eventsModel: eventsModel,
     });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -55,9 +54,9 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  createEvent(event) {
+  createEvent() {
     this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.Everything);
-    this.#newEventPresenter.init(event);
+    this.#newEventPresenter.init();
   }
 
   #handleModeChange = () => {

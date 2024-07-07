@@ -2,6 +2,7 @@ import { mockEvents } from '../mock/events.js';
 import { mockDestinations } from '../mock/destinations.js';
 import { mockOffers } from '../mock/offers.js';
 import Observable from '../framework/observable.js';
+import { EVENT_TYPES } from '../const.js';
 
 export default class EventsModel extends Observable {
   #events = mockEvents;
@@ -45,23 +46,14 @@ export default class EventsModel extends Observable {
     this._notify(updateType, update);
   }
 
-  deleteEvent(updateType, update) {
-    const index = this.#events.findIndex((event) => event.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting event');
-    }
-
-    this.#events = [
-      ...this.#events.slice(0, index),
-      ...this.#events.slice(index + 1),
-    ];
+  deleteEvent(updateType, event) {
+    this.#events = this.#events.filter((item) => item.id !== event.id)
 
     this._notify(updateType);
   }
 
 
-  getOffersByType(type) {
+  getOffersByType(type = EVENT_TYPES[0].toLocaleLowerCase()) {
     return this.#offers.find((offer) => offer.type === type).offers;
   }
 }

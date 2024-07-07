@@ -7,36 +7,28 @@ export default class NewEventPresenter {
   #eventListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-  #destinations = null;
-  #offers = null;
   #eventsModel = null;
-  #event = null;
 
   #eventEditComponent = null;
 
-  constructor({eventListContainer, onDataChange, onDestroy, destinations, offers, eventsModel}) {
+  constructor({eventListContainer, onDataChange, onDestroy, eventsModel}) {
     this.#eventListContainer = eventListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
-    this.#destinations = destinations;
-    this.#offers = offers;
     this.#eventsModel = eventsModel;
   }
 
-  init(event) {
-    console.log(event)
-    this.#event = event;
+  init() {
+
     if (this.#eventEditComponent !== null) {
       return;
     }
 
     this.#eventEditComponent = new EventFormView({
-      event,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
-      allDestinations: this.#destinations,
-      // offersByType: this.#offers,
-      offersByType: this.#eventsModel.getOffersByType(event.type)
+      allDestinations: this.#eventsModel.destinations,
+      offersByType: this.#eventsModel.getOffersByType()
     });
 
     render(this.#eventEditComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);

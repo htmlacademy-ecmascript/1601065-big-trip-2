@@ -1,9 +1,21 @@
 import { EVENT_TYPES } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
+
+const BLANK_EVENT = {
+  date_from: dayjs(),
+  date_to: dayjs(),
+  type: EVENT_TYPES[0],
+  base_price: 0,
+  destination: '',
+  name: '',
+  offers: [],
+  isFavorite: false,
+};
 
 function createEventTypeTemplate(eventType) {
   return(
@@ -99,7 +111,7 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type || `Flight`}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -114,22 +126,22 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${event.type || `Flight`}
+              ${event.type || BLANK_EVENT.type}
             </label>
             <input class="event__input  event__input--destination"
             id="event-destination-1" type="text"
-            name="${he.encode(pointDestination?.name ||``)}}"
-            value="${he.encode(pointDestination?.name ||``)}"
+            name="${he.encode(pointDestination?.name || BLANK_EVENT.name)}}"
+            value="${he.encode(pointDestination?.name || BLANK_EVENT.name)}"
             list="destination-list-1">
             ${createOptionTemplate(allDestinations)}
           </div>
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${BLANK_EVENT.date_from}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${BLANK_EVENT.date_to}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -137,7 +149,7 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice || `0`}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice || BLANK_EVENT.base_price}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -166,7 +178,7 @@ export default class EventFormView extends AbstractStatefulView {
   #datepickerTo = null;
   #handleDeleteClick = null;
 
-  constructor({event, offersByType, allDestinations, onFormSubmit, onEditClick, onDeleteClick}) {
+  constructor({event = BLANK_EVENT, offersByType, allDestinations, onFormSubmit, onEditClick, onDeleteClick}) {
     super();
     this.#event = event;
     this.#offers = offersByType;
@@ -174,7 +186,6 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
     this.#handleDeleteClick = onDeleteClick;
-
 
     this._setState(EventFormView.parseEventToState(event));
     this._restoreHandlers();
