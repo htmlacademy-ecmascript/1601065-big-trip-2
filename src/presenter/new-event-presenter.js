@@ -28,7 +28,8 @@ export default class NewEventPresenter {
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
       allDestinations: this.#eventsModel.destinations,
-      offersByType: this.#eventsModel.getOffersByType()
+      offersByType: this.#eventsModel.getOffersByType(),
+      isEditView: false
     });
 
     render(this.#eventEditComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);

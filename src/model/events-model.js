@@ -54,7 +54,6 @@ export default class EventsModel extends Observable {
 
 
   getOffersByType(type = EVENT_TYPES[0].toLocaleLowerCase()) {
-    return this.#offers.find((offer) => offer.type === type).offers;
+    return this.#offers.find((offer) => (offer.type === type)).offers
   }
 }
-

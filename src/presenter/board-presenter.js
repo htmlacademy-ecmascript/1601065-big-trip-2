@@ -3,7 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from '../presenter/event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
-import { render, remove } from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import { sortByPrice, sortByTime } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const.js';
 import { filters } from '../utils/filter.js';
@@ -41,7 +41,7 @@ export default class BoardPresenter {
     const filteredEvents = filters[this.#filterType](events);
     switch (this.#currentSortType) {
       case SORT_TYPES.Day:
-       return [...this.#eventsModel.events];
+      return [...this.#eventsModel.events];
       case SORT_TYPES.Time:
         return filteredEvents.sort(sortByTime);
       case SORT_TYPES.Price:
@@ -110,7 +110,8 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
-    render(this.#sortComponent, this.#eventListComponent.element);
+    // render(this.#sortComponent, this.#eventListComponent.element);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderEvent(event) {

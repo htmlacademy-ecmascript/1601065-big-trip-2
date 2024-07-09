@@ -7,12 +7,11 @@ import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
-  date_from: dayjs(),
-  date_to: dayjs(),
-  type: EVENT_TYPES[0],
-  base_price: 0,
+  dateFrom: dayjs().toISOString(),
+  dateTo: dayjs().toISOString(),
+  type: EVENT_TYPES[0].toLocaleLowerCase(),
+  basePrice: 0,
   destination: '',
-  name: '',
   offers: [],
   isFavorite: false,
 };
@@ -63,7 +62,7 @@ function createOffersTemplate(offersByType, eventOffers) {
             <span class="event__offer-price">${offerItem.price}</span>
           </label>
         </div>`
-    ) ).join('') || ''}
+    )).join('') || ''}
       </div>
     </section>`
   );
@@ -72,7 +71,7 @@ function createOffersTemplate(offersByType, eventOffers) {
 function createDestinationTemplate(pointDestination) {
 
   if (pointDestination === undefined) {
-    return ''
+    return '';
   }
 
   return (
@@ -100,7 +99,7 @@ function createOptionTemplate(allDestinations) {
   );
 }
 
-function createEventEditTemplate(event, allDestinations, offersByType) {
+function createEventEditTemplate(event, allDestinations, offersByType, isEditMode) {
   const {basePrice, destination, type, offers} = event;
   const pointDestination = allDestinations.find((item) => destination === item.id);
 
@@ -126,22 +125,21 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${event.type || BLANK_EVENT.type}
+              ${event.type}
             </label>
             <input class="event__input  event__input--destination"
             id="event-destination-1" type="text"
-            name="${he.encode(pointDestination?.name || BLANK_EVENT.name)}}"
-            value="${he.encode(pointDestination?.name || BLANK_EVENT.name)}"
+            value="${he.encode(pointDestination?.name || '')}"
             list="destination-list-1">
             ${createOptionTemplate(allDestinations)}
           </div>
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${BLANK_EVENT.date_from}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${event.dateFrom}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${BLANK_EVENT.date_to}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${event.dateTo}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -149,11 +147,11 @@ function createEventEditTemplate(event, allDestinations, offersByType) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice || BLANK_EVENT.base_price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${event.basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__reset-btn" type="reset">${isEditMode ? 'Delete' : 'Cancel'}</button>
           <button class="event__rollup-btn" type="button">
               <span class="visually-hidden">Open event</span>
           </button>
@@ -177,8 +175,16 @@ export default class EventFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
   #handleDeleteClick = null;
+  #editView = null;
 
-  constructor({event = BLANK_EVENT, offersByType, allDestinations, onFormSubmit, onEditClick, onDeleteClick}) {
+  constructor({
+    event = BLANK_EVENT,
+    offersByType,
+    allDestinations,
+    onFormSubmit,
+    onEditClick,
+    onDeleteClick,
+    isEditView = true,}) {
     super();
     this.#event = event;
     this.#offers = offersByType;
@@ -186,13 +192,14 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
     this.#handleDeleteClick = onDeleteClick;
+    this.#editView = isEditView;
 
     this._setState(EventFormView.parseEventToState(event));
     this._restoreHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#editView);
   }
 
   reset(event) {
