@@ -1,6 +1,7 @@
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
 import { replace, render, remove } from '../framework/render.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -18,9 +19,9 @@ export default class EventPresenter {
   #handleModeChange = null;
   #mode = Mode.DEFAULT;
 
-  constructor({eventsModel, destinations, eventContainer, onDataChange, onModeChange}) {
+  constructor({eventsModel, eventContainer, onDataChange, onModeChange}) {
     this.#eventsModel = eventsModel;
-    this.#destinations = destinations;
+    this.#destinations = eventsModel.destinations;
     this.#eventContainer = eventContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -45,6 +46,7 @@ export default class EventPresenter {
       offersByType: this.#eventsModel.getOffersByType(event.type),
       onEditClick:  this.#closeForm,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -106,11 +108,33 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
+      {...this.#event, isFavorite: !this.#event.isFavorite},
+    );
   };
 
-  #handleFormSubmit = (updateEvent) => {
-    this.#handleDataChange(updateEvent);
+
+    #handleFormSubmit = (update) => {
+      const isMinorUpdate =
+      this.#event.dateFrom === update.dateFrom ||
+      this.#event.dateTo === update.dateTo ||
+      this.#event.basePrise === update.basePrise
+
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      false ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
   };
 }

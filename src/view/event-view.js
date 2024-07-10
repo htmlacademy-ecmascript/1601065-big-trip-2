@@ -10,6 +10,8 @@ function createEventTemplate(event, offersByType, allDestinations) {
   const fromTime = dayjs(dateFrom).format('HH:mm');
   const toTime = dayjs(dateTo).format('HH:mm');
 
+  console.log(arrayDestination.name)
+
   return (
     `<li class="trip-events__item">
       <div class="event">
