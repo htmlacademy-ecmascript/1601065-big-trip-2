@@ -1,64 +1,45 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 
-dayjs.extend(duration);
+const getWeightForNullParam = (a, b) => {
+  if (a === null && b === null) {
+    return 0;
+  }
 
-const DATE_FORMAT = 'MMMM D HH:mm';
+  if (a === null) {
+    return 1;
+  }
 
-function humanizeEventDueDate(dueDate) {
-  return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
-}
+  if (b === null) {
+    return -1;
+  }
 
-const getInteger = (string) => parseInt(string, 10);
-
-const getDuration = (startDate, endDate) => dayjs.duration(dayjs(endDate).diff(dayjs(startDate)));
-
-const getDateDifference = (dateFrom, dateTo) => {
-  const difference = getDuration(dateFrom, dateTo);
-  const days = difference.format('D');
-  const hours = difference.format('HH');
-  const minutes = difference.format('mm');
-  const daysTemplate = getInteger(days) ? `${days}D` : '';
-  const hoursTemplate = !(getInteger(days) || getInteger(hours)) ? '' : `${hours}H`;
-  const minutesTemplate = `${minutes}M`;
-
-  return `${daysTemplate} ${hoursTemplate} ${minutesTemplate}`;
+  return null;
 };
 
-function isEventToday(dueDate) {
-  return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
-}
+const sortDate = (pointA, pointB) => {
+  const weight = getWeightForNullParam(pointA.dateFrom, pointB.dateFrom);
 
-function isEventFuture(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
-}
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+};
 
-function isEventPast(dueDate) {
-  return dueDate && dayjs().isBefore(dueDate, 'D');
-}
+const sortPrice = (pointA, pointB) => {
+  const weight = getWeightForNullParam(pointA.totalPrice, pointB.totalPrice);
 
-function sortByPrice(eventB, eventA) {
-  return eventA.basePrice - eventB.basePrice;
-}
+  return weight ?? pointB.totalPrice - pointA.totalPrice;
+};
 
-function sortByTime(eventB, eventA) {
-  const eventADuration = getEventDuration(eventA);
-  const eventBDuration = getEventDuration(eventB) ;
+const getOffersByType = (point, pointCommon) => pointCommon.allOffers.find((offerTypes) => offerTypes.type === point.type).offers;
 
-  return eventADuration - eventBDuration;
-}
+const calculateTotalPrice = (point, pointCommon) => {
+  let price = point.basePrice;
+  const offersByType = getOffersByType(point, pointCommon);
+  point.selectedOffers.map((selectedOfferId) => {
+    const offerPrice = offersByType.find((offer) => offer.id === selectedOfferId).price;
+    price += offerPrice;
+  });
+  return price;
+};
 
-function getEventDuration(event) {
-  return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
-}
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-function isDatesEqual(dateA, dateB) {
-  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
-}
-
-function isEventsRepeating(repeating) {
-  return Object.values(repeating).some(Boolean);
-}
-
-
-export {humanizeEventDueDate, DATE_FORMAT, getDuration, getInteger, getDateDifference, isEventToday, isEventPast, isEventFuture, sortByPrice, sortByTime, isDatesEqual, isEventsRepeating};
+export { sortDate, sortPrice, getOffersByType, calculateTotalPrice, isDatesEqual };

@@ -9,48 +9,46 @@ const Mode = {
 };
 
 export default class EventPresenter {
-  #eventsModel = null;
-  #destinations = null;
+  #eventListContainer = null;
+  #handleDataChange = null;
+  #handleModeChange = null;
+
   #eventComponent = null;
   #eventEditComponent = null;
-  #eventContainer = null;
-  #handleDataChange = null;
+
   #event = null;
-  #handleModeChange = null;
+  #eventCommon = null;
   #mode = Mode.DEFAULT;
 
-  constructor({eventsModel, eventContainer, onDataChange, onModeChange}) {
-    this.#eventsModel = eventsModel;
-    this.#destinations = eventsModel.destinations;
-    this.#eventContainer = eventContainer;
+  constructor({ eventListContainer, eventCommon, onDataChange, onModeChange }) {
+    this.#eventListContainer = eventListContainer;
+    this.#eventCommon = eventCommon;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
 
   init(event) {
     this.#event = event;
+
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
     this.#eventComponent = new EventView({
-      event,
-      allDestinations: this.#destinations,
-      offersByType: this.#eventsModel.getOffersByType(event.type),
-      onFavoriteClick: this.#handleFavoriteClick,
+      event: this.#event,
+      eventCommon: this.#eventCommon,
       onEditClick: this.#handleEditClick,
     });
 
     this.#eventEditComponent = new EventFormView({
-      event,
-      allDestinations: this.#destinations,
-      offersByType: this.#eventsModel.getOffersByType(event.type),
-      onEditClick:  this.#closeForm,
+      event: this.#event,
+      eventCommon: this.#eventCommon,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
+      onCloseClick: this.#handleCloseClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
-      render(this.#eventComponent, this.#eventContainer);
+      render(this.#eventComponent, this.#eventListContainer);
       return;
     }
 
@@ -59,18 +57,12 @@ export default class EventPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#eventEditComponent, prevEventEditComponent);
+      replace(this.#eventComponent, prevEventEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
     remove(prevEventEditComponent);
-  }
-
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#eventEditComponent.reset(this.#event);
-      this.#replaceFormToCard();
-    }
   }
 
   destroy() {
@@ -78,63 +70,96 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
-  #closeForm = () => {
-    this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
       this.#eventEditComponent.reset(this.#event);
-      this.#closeForm();
+      this.#replaceFormToEvent();
     }
-  };
+  }
 
-  #replaceCardToForm() {
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+      this.resetView();
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  }
+
+  #replaceEventToForm() {
     replace(this.#eventEditComponent, this.#eventComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   }
 
-  #replaceFormToCard() {
+  #replaceFormToEvent() {
     replace(this.#eventComponent, this.#eventEditComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   }
 
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
+      this.#replaceFormToEvent();
+    }
+  };
+
   #handleEditClick = () => {
-    this.#replaceCardToForm();
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#replaceEventToForm();
   };
 
-  #handleFavoriteClick = () => {
-    this.#handleDataChange(
-      UserAction.UPDATE_EVENT,
-      UpdateType.PATCH,
-      {...this.#event, isFavorite: !this.#event.isFavorite},
-    );
-  };
-
-
-    #handleFormSubmit = (update) => {
-      const isMinorUpdate =
-      this.#event.dateFrom === update.dateFrom ||
-      this.#event.dateTo === update.dateTo ||
-      this.#event.basePrise === update.basePrise
+  #handleFormSubmit = (update) => {
+    const isPatchUpdate =
+      isDatesEqual(this.#event.dateFrom, update.dateFrom) &&
+      calculateTotalPrice(this.#event, this.#eventCommon) === calculateTotalPrice(update, this.#eventCommon);
 
     this.#handleDataChange(
-      UserAction.UPDATE_EVENT,
-      false ? UpdateType.MINOR : UpdateType.PATCH,
+      UserAction.UPDATE_POINT,
+      isPatchUpdate ? UpdateType.PATCH : UpdateType.MINOR,
       update,
     );
-    this.#replaceFormToCard();
   };
 
   #handleDeleteClick = (event) => {
     this.#handleDataChange(
-      UserAction.DELETE_EVENT,
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       event,
     );
+  };
+
+  #handleCloseClick = () => {
+    this.#eventEditComponent.reset(this.#event);
+    this.#replaceFormToEvent();
   };
 }

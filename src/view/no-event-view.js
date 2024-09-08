@@ -1,24 +1,29 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { FILTER_TYPES } from '../const.js';
 
-function createNoEventTemplate() {
+const NoEventsTextType = {
+  [FILTER_TYPES.Everything]: 'Click New Event to create your first point',
+  [FILTER_TYPES.Future]: 'There are no future events now',
+};
+
+const createNoEventMessageTemplate = (filterType) => {
+  const noEventTextValue = NoEventsTextType[filterType];
   return (
-    `<p class="board__no-event trip-events__msg">
-        Click New Event to create your first point
+    `<p class="trip-events__msg">
+      ${noEventTextValue}
     </p>`
-
   );
-}
+};
 
 export default class NoEventView extends AbstractView {
   #filterType = null;
 
-  constructor({filterType}) {
+  constructor({ filterType }) {
     super();
     this.#filterType = filterType;
   }
 
   get template() {
-    // return createNoEventTemplate();
-    return createNoEventTemplate(this.#filterType);
+    return createNoEventMessageTemplate(this.#filterType);
   }
 }

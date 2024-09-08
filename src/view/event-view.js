@@ -1,102 +1,80 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDateDifference } from '../utils/events.js';
 import dayjs from 'dayjs';
+import { calculateTotalPrice, getOffersByType } from '../utils/events.js';
 
-function createEventTemplate(event, offersByType, allDestinations) {
-  const { isFavorite, basePrice, dateFrom, dateTo, type} = event;
-  const pointOffers = offersByType.filter((typeOffer) => event.offers.includes(typeOffer.id));
-  const pointDestination = allDestinations.filter((typeDestination) => event.destination.includes(typeDestination.id));
-  const [arrayDestination] = pointDestination;
-  const fromTime = dayjs(dateFrom).format('HH:mm');
-  const toTime = dayjs(dateTo).format('HH:mm');
+const createSelectedOffersTemplate = (event, eventCommon) => {
+  if (event.selectedOffers.length === 0) {
+    return '<span class="event__offer-title">No additional offers</span>';
+  }
 
-  console.log(arrayDestination.name)
+  return event.selectedOffers.map((selectedOfferId) => {
+    const offersByType = getOffersByType(event, eventCommon);
+    const selectedOffer = offersByType.find((offer) => offer.id === selectedOfferId);
+    return (`<li class="event__offer">
+      <span class="event__offer-title">${selectedOffer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${selectedOffer.price}</span>
+    </li>`);
+  }).join('');
+};
+
+const createEventTemplate = (event, eventCommon) => {
+  const { dateFrom, dateTo, type } = event;
+  const totalPrice = calculateTotalPrice(event, eventCommon);
+  const destination = eventCommon.allDestinations.find((dest) => dest.id === event.destId);
 
   return (
-    `<li class="trip-events__item">
+    `
+    <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime= ${dateFrom}>${dayjs(dateFrom).format('MMM D')}</time>
+        <time class="event__date" datetime="${dayjs(dateFrom).format('YYYY-MM-DD')}">${dayjs(dateFrom).format('MMM D')}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${arrayDestination.name}</h3>
+        <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime=${dateFrom}>${fromTime}</time>
+            <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateFrom).format('HH:mm')}</time>
             &mdash;
-            <time class="event__end-time" datetime=${dateTo}>${toTime}</time>
-          </p>
-          <p class="event__duration">
-          ${getDateDifference(dateFrom, dateTo)}
+            <time class="event__end-time" datetime="${dayjs(dateTo).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateTo).format('HH:mm')}</time>
           </p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${totalPrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${pointOffers.map((offer) =>(
-      `<li class="event__offer">
-              <span class="event__offer-title">${offer.title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
-            </li>`)).join('')}
+          ${createSelectedOffersTemplate(event, eventCommon)}
         </ul>
-
-        ${createEventButtonFavorite(isFavorite)}
-
-
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-  </li>`
+    </li>
+    `
   );
-}
-
-function createEventButtonFavorite(isFavorite) {
-  return(
-    `<button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
-    <span class="visually-hidden">Add to favorite</span>
-    <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-      <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-    </svg>
-  </button>`
-  );
-}
+};
 
 export default class EventView extends AbstractView {
   #event = null;
-  #offersByType = null;
-  #destinations = null;
+  #eventCommon = null;
   #handleEditClick = null;
-  #handleFavoriteClick = null;
 
-  constructor({event, offersByType, allDestinations, onEditClick, onFavoriteClick}) {
+  constructor({ event, eventCommon, onEditClick }) {
     super();
     this.#event = event;
-    this.#offersByType = offersByType;
-    this.#destinations = allDestinations;
+    this.#eventCommon = eventCommon;
     this.#handleEditClick = onEditClick;
-    this.#handleFavoriteClick = onFavoriteClick;
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#editClickHandler);
-    this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#favoriteClickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createEventTemplate(this.#event, this.#offersByType, this.#destinations);
+    return createEventTemplate(this.#event, this.#eventCommon);
   }
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
-  };
-
-  #favoriteClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFavoriteClick();
   };
 }

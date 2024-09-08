@@ -22,10 +22,18 @@ export default class FilterPresenter {
   get filters() {
     const events = this.#eventsModel.events;
 
-    return Object.values(FILTER_TYPES).map((type) => ({
-      type,
-      count: filters[type](events).length
-    }));
+    return [
+      {
+        type: FILTER_TYPES.Everything,
+        name: 'everything',
+        count: filters[FILTER_TYPES.Everything](events).length,
+      },
+      {
+        type: FILTER_TYPES.Future,
+        name: 'future',
+        count: filters[FILTER_TYPES.Future](events).length,
+      },
+    ];
   }
 
   init() {

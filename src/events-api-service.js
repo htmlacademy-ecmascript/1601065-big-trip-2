@@ -1,68 +1,69 @@
-import  ApiService  from './framework/api-service.js'
-import { ApiMethod } from './const.js';
+import ApiService from './framework/api-service.js';
 
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
-export default class  EventsApiServiceextends extends ApiService {
+export default class EventsApiService extends ApiService {
   get events() {
-    return this._load({url: 'events'})
-      .then(ApiService.parseResponse);
-  }
-
-  get destinations() {
-    return this._load({url: 'destinations'})
-      .then(ApiService.parseResponse);
-  }
-
-  get offers() {
-    return this._load({url: 'offers'})
+    return this._load({ url: 'events' })
       .then(ApiService.parseResponse);
   }
 
   async updateEvent(event) {
     const response = await this._load({
       url: `events/${event.id}`,
-      method: ApiMethod.PUT,
-      body: JSON.stringify(event),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      method: Method.PUT,
+      body: JSON.stringify(this.#adaptToServer(event)),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
     });
+
     const parsedResponse = await ApiService.parseResponse(response);
+
     return parsedResponse;
   }
 
   async addEvent(event) {
     const response = await this._load({
-      url: `events/${event.id}`,
-      method: ApiMethod.POST,
-      body: JSON.stringify(event),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      url: 'events',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(event)),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
     });
+
     const parsedResponse = await ApiService.parseResponse(response);
+
     return parsedResponse;
   }
 
   async deleteEvent(event) {
-    await this._load({
-      url: 'events',
-      method: ApiMethod.DELETE,
-    })
+    const response = await this._load({
+      url: `events/${event.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
-  #adaptEventToServer(event) {
-    const newEvent = {
+  #adaptToServer(event) {
+    const adaptedEvent = {
       ...event,
-      'basePrise': parseInt(event.basePrise, 10),
-      'dateTo': event.dateTo,
-      'dateFrom': event.dateFrom,
-      'isFavorite': event.isFavorite,
+      'base_price': event.basePrice,
+      'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
+      'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
+      'destination': point.destId,
+      'offers': point.selectedOffers,
     };
-    delete newEvent.basePrise;
-    delete newEvent.dateTo;
-    delete newEvent.dateFrom;
-    delete newEvent.isFavorite;
-    return newEvent;
+
+    delete adaptedEvent['basePrice'];
+    delete adaptedEvent['dateFrom'];
+    delete adaptedEvent['dateTo'];
+    delete adaptedEvent['destId'];
+    delete adaptedEvent['selectedOffers'];
+
+    return adaptedEvent;
   }
 }

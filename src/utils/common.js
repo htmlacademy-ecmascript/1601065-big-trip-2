@@ -1,9 +1,12 @@
+import dayjs from 'dayjs';
+
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
+const capitalizeFirstLetter = (string) => string.charAt(0)
+  .toUpperCase() + string.slice(1);
 
-// function updateItem(items, update) {
-//   return items.map((item) => item.id === update.id ? update : item);
-// }
+const isFuturePoint = (dateFrom) => dateFrom && (dayjs().isSame(dateFrom, 'D') || dayjs().isBefore(dateFrom, 'D'));
 
-export {getRandomArrayElement};
+
+export {getRandomArrayElement, capitalizeFirstLetter, isFuturePoint};

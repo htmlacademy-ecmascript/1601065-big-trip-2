@@ -27,6 +27,9 @@ const UpdateType = {
   MAJOR: 'MAJOR',
   INIT: 'INIT',
   ERROR: 'ERROR',
+  INIT_POINT: 'INIT_POINT',
+  INIT_POINT_COMMON: 'INIT_POINT_COMMON',
+  ERROR_LOADING: 'ERROR_LOADING',
 };
 
 const ApiMethod = {
@@ -36,4 +39,13 @@ const ApiMethod = {
   DELETE: 'DELETE',
 }
 
-export {EVENT_TYPES, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType, ApiMethod};
+const BlockerTimeLimits = {
+  LOWER_LIMIT: 'LOWER_LIMIT',
+  UPPER_LIMIT: 'UPPER_LIMIT',
+}
+
+const InfoMessage = {
+  LOADING: 'LOADING',
+}
+
+export {EVENT_TYPES, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType, ApiMethod, BlockerTimeLimits, InfoMessage};
