@@ -57,7 +57,7 @@ export default class BoardPresenter {
   get events() {
     this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
-    const filteredEvents = filters[this.#filterType](points);
+    const filteredEvents = filters[this.#filterType](events);
 
     switch (this.#currentSortType) {
       case SORT_TYPES.Day:
@@ -103,7 +103,7 @@ export default class BoardPresenter {
     this.#uiBlocker.block();
 
     switch (actionType) {
-      case UserAction.UPDATE_POINT:
+      case UserAction.UPDATE_EVENT:
         this.#eventPresenter.get(update.id).setSaving();
         try {
           this.#eventsModel.updatePoint(updateType, update);
@@ -149,7 +149,7 @@ export default class BoardPresenter {
         this.#isEventLoading = false;
         break;
       case UpdateType.INIT_POINT_COMMON:
-        this.#eventCommon = this.#eventCommonModel.pointCommon;
+        this.#eventCommon = this.#eventCommonModel.eventCommon;
         this.#isEventCommonLoading = false;
         break;
       case UpdateType.ERROR_LOADING:

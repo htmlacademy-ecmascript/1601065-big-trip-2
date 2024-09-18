@@ -24,8 +24,9 @@ export default class EventCommonModel extends Observable {
       this.#eventCommon = { allOffers, allDestinations };
       this._notify(UpdateType.INIT_POINT_COMMON);
     } catch (err) {
+      console.log({err})
       this._notify(UpdateType.ERROR_LOADING);
-      throw new Error('Error loading data from server');
+      // throw new Error('Error loading data from server');
     }
   }
 }

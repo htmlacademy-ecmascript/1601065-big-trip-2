@@ -1,4 +1,5 @@
-import {FILTER_TYPES} from '../const.js';
+import { FILTER_TYPES } from '../const.js';
+import { isEventFuture, isEventPast, isEventToday } from './events.js';
 
 const filters = {
 

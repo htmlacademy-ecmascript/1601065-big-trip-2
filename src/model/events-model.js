@@ -16,8 +16,8 @@ export default class EventsModel extends Observable {
 
   async init() {
     try {
-      const points = await this.#eventsApiService.points;
-      this.#events = points.map(this.#adaptToClient);
+      const events = await this.#eventsApiService.events;
+      this.#events = events.map(this.#adaptToClient);
     } catch (err) {
       this.#events = [];
     }
@@ -43,7 +43,7 @@ export default class EventsModel extends Observable {
 
       this._notify(updateType, updatedEvent);
     } catch (err) {
-      throw new Error('Can\'t update point');
+      throw new Error('Can\'t update event');
     }
   }
 

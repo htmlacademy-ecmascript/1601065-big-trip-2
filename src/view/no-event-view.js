@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { FILTER_TYPES } from '../const.js';
 
 const NoEventsTextType = {
-  [FILTER_TYPES.Everything]: 'Click New Event to create your first point',
+  [FILTER_TYPES.Everything]: 'Click New Event to create your first event',
   [FILTER_TYPES.Future]: 'There are no future events now',
 };
 

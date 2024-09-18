@@ -16,30 +16,43 @@ const getWeightForNullParam = (a, b) => {
   return null;
 };
 
-const sortDate = (pointA, pointB) => {
-  const weight = getWeightForNullParam(pointA.dateFrom, pointB.dateFrom);
+const sortDate = (eventA, eventB) => {
+  const weight = getWeightForNullParam(eventA.dateFrom, eventB.dateFrom);
 
-  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+  return weight ?? dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
 };
 
-const sortPrice = (pointA, pointB) => {
-  const weight = getWeightForNullParam(pointA.totalPrice, pointB.totalPrice);
+const sortPrice = (eventA, eventB) => {
+  const weight = getWeightForNullParam(eventA.totalPrice, eventB.totalPrice);
 
-  return weight ?? pointB.totalPrice - pointA.totalPrice;
+  return weight ?? eventB.totalPrice - eventA.totalPrice;
 };
 
-const getOffersByType = (point, pointCommon) => pointCommon.allOffers.find((offerTypes) => offerTypes.type === point.type).offers;
+const getOffersByType = (event, eventCommon) => eventCommon.allOffers.find((offerTypes) => offerTypes.type === event.type).offers;
 
-const calculateTotalPrice = (point, pointCommon) => {
-  let price = point.basePrice;
-  const offersByType = getOffersByType(point, pointCommon);
-  point.selectedOffers.map((selectedOfferId) => {
+const calculateTotalPrice = (event, eventCommon) => {
+  let price = event.basePrice;
+  const offersByType = getOffersByType(event, eventCommon);
+  event.selectedOffers.map((selectedOfferId) => {
     const offerPrice = offersByType.find((offer) => offer.id === selectedOfferId).price;
     price += offerPrice;
   });
   return price;
 };
 
+function isEventToday(dueDate) {
+  return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
+}
+
+function isEventFuture(dueDate) {
+  return dueDate && dayjs().isAfter(dueDate, 'D');
+}
+
+function isEventPast(dueDate) {
+  return dueDate && dayjs().isBefore(dueDate, 'D');
+}
+
+
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-export { sortDate, sortPrice, getOffersByType, calculateTotalPrice, isDatesEqual };
+export { sortDate, sortPrice, getOffersByType, calculateTotalPrice, isDatesEqual, isEventFuture, isEventPast, isEventToday };

@@ -9,13 +9,13 @@ const Method = {
 
 export default class EventsApiService extends ApiService {
   get events() {
-    return this._load({ url: 'events' })
+    return this._load({ url: 'points' })
       .then(ApiService.parseResponse);
   }
 
   async updateEvent(event) {
     const response = await this._load({
-      url: `events/${event.id}`,
+      url: `points/${event.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -28,7 +28,7 @@ export default class EventsApiService extends ApiService {
 
   async addEvent(event) {
     const response = await this._load({
-      url: 'events',
+      url: 'points',
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -41,7 +41,7 @@ export default class EventsApiService extends ApiService {
 
   async deleteEvent(event) {
     const response = await this._load({
-      url: `events/${event.id}`,
+      url: `points/${event.id}`,
       method: Method.DELETE,
     });
 
@@ -54,8 +54,8 @@ export default class EventsApiService extends ApiService {
       'base_price': event.basePrice,
       'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
       'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
-      'destination': point.destId,
-      'offers': point.selectedOffers,
+      'destination': event.destId,
+      'offers': event.selectedOffers,
     };
 
     delete adaptedEvent['basePrice'];
