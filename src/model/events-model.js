@@ -25,7 +25,7 @@ export default class EventsModel extends Observable {
     this._notify(UpdateType.INIT_POINT);
   }
 
-  async updatePoint(updateType, update) {
+  async updateEvent(updateType, update) {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
@@ -33,7 +33,7 @@ export default class EventsModel extends Observable {
     }
 
     try {
-      const response = await this.#eventsApiService.updatePoint(update);
+      const response = await this.#eventsApiService.updateEvent(update);
       const updatedEvent = this.#adaptToClient(response);
       this.#events = [
         ...this.#events.slice(0, index),
@@ -47,9 +47,9 @@ export default class EventsModel extends Observable {
     }
   }
 
-  async addPoint(updateType, update) {
+  async addEvent(updateType, update) {
     try {
-      const response = await this.#eventsApiService.addPoint(update);
+      const response = await this.#eventsApiService.addEvent(update);
       const newEvent = this.#adaptToClient(response);
       this.#events = [newEvent, ...this.#events];
       this._notify(updateType, newEvent);

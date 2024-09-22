@@ -10,6 +10,7 @@ import { sortDate, sortPrice } from '../utils/events.js';
 import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const.js';
 import { filters } from '../utils/filter.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import { calculateTotalPrice } from '../utils/events.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -111,7 +112,7 @@ export default class BoardPresenter {
           this.#eventPresenter.get(update.id).setAborting();
         }
         break;
-      case UserAction.ADD_POINT:
+      case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
         try {
           this.#eventsModel.addPoint(updateType, update);
@@ -119,7 +120,7 @@ export default class BoardPresenter {
           this.#newEventPresenter.setAborting();
         }
         break;
-      case UserAction.DELETE_POINT:
+      case UserAction.DELETE_EVENT:
         this.#eventPresenter.get(update.id).setDeleting();
         try {
           this.#eventsModel.deletePoint(updateType, update);

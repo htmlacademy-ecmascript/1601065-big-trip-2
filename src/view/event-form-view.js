@@ -179,7 +179,7 @@ export default class EventFormView  extends AbstractStatefulView {
       dateTo: new Date(),
     }, eventCommon, onFormSubmit, onDeleteClick, onCloseClick }) {
     super();
-    this._setState(EventEditView.parseEventToState(event));
+    this._setState(EventFormView.parseEventToState(event));
     this.#eventCommon = eventCommon;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
@@ -205,7 +205,7 @@ export default class EventFormView  extends AbstractStatefulView {
 
   reset(event) {
     this.updateElement(
-      EventEditView.parseEventToState(event),
+      EventFormView.parseEventToState(event),
     );
   }
 
@@ -302,12 +302,12 @@ export default class EventFormView  extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EventEditView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(EventFormView.parseStateToEvent(this._state));
   };
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick(EventEditView.parseStateToPoint(this._state));
+    this.#handleDeleteClick(EventFormView.parseStateToEvent(this._state));
   };
 
   #closeClickHandler = () => {
